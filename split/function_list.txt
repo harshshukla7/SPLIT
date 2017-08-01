@@ -1,0 +1,20 @@
+Linear functions
+conj, conv, cumsum, diag, dot, find, fliplr, flipud, flipdim, horzcat, hankel, ipermute, kron, mean, permute, repmat, reshape, rot90, sparse, sum, trace, tril, triu, toeplitz, vertcat
+
+Nonlinear
+abs
+max
+min
+norm (1, 2, inf)
+huber
+pos = max{x,0}
+quad_form
+square
+square_pos max{x,0}^2
+
+
+Sets
+nonnegative
+simplex
+lorentz
+norm_ball

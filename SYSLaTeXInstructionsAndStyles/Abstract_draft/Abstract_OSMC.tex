@@ -1,0 +1,131 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl}
+
+
+%\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion=true]{microtype}	
+\usepackage{cmbright}
+
+%%% Custom sectioning (sectsty package)
+\usepackage{sectsty}												% Custom sectioning (see below)
+%\allsectionsfont{\centering \normalfont\scshape}	% Change font of al section commands
+\allsectionsfont{\scshape}	% Change font of al section commands
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\usepackage{listings}
+\pagestyle{fancyplain}
+\fancyhead{}														% No page header
+\fancyfoot[C]{}													% Empty
+\fancyfoot[R]{\thepage}									% Pagenumbering
+\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
+\renewcommand{\footrulewidth}{0pt}				% Remove footer underlines
+\setlength{\headheight}{13.6pt}
+
+%%% Maketitle metadata
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+
+\date{}
+
+%\usepackage{verbatim}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\pgfplotsset{plot coordinates/math parser=false}
+\usepackage{graphicx}
+%\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+%\usepackage[noend]{algpseudocode}
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{nomencl} 
+\newcommand{\eg}{{\it e.g. }}	
+\newcommand{\ie}{{\it i.e. }}	
+\newcommand{\reals}{{\mathbb{R} }}	
+\DeclareMathOperator*{\argmin}{arg\,min}	
+\newcommand{\dist}{{\mathbf{dist} }}	
+\newcommand{\interior}{\mathop{\bf int}}
+\newcommand{\diag}{\mathop{\bf diag}}
+\newcommand{\tr}{{\top}}
+
+%\newcommand{name}[num]{definition}
+
+
+\newcommand{\pfpx}[4]{\frac{\partial #1_{#2}}{\partial #3_{#4}}}
+
+
+\title{Operator splitting methods in control}
+
+
+\begin{document}
+
+
+\author{
+Giorgos Stathopoulos \\
+\'Ecole Polytechnique F\'ed\'erale de Lausanne (EPFL) \\
+\and
+Harsh Shukla \\
+\'Ecole Polytechnique F\'ed\'erale de Lausanne (EPFL) \\
+\and
+Alexander Sz\"{u}cs\\
+Slovak University of Technology in Bratislava \\
+\and
+Ye Pu \\
+\'Ecole Polytechnique F\'ed\'erale de Lausanne (EPFL) \\
+\and
+Colin N. Jones \\
+\'Ecole Polytechnique F\'ed\'erale de Lausanne (EPFL) \\
+}
+
+\maketitle
+
+\section{Abstract}
+The significant progress that has been made in recent years both in hardware implementations and in numerical computing has rendered real-time optimization-based control a viable option when it comes to advanced industrial applications. More recently, the need for control of fast, complex processes using strongly limited hardware resources has triggered research in the direction of embedded optimization-based control. At the same time, and standing at the other end of the spectrum, the field of big data has emerged, looking for solutions to problems that classical optimization algorithms cannot provide. This has triggered the revisiting of the family of first order methods commonly known as \emph{decomposition schemes} or \emph{operator splitting methods}. Although it has been established that splitting methods are quite beneficial when applied to large-scale problems, their potential in solving small to medium scale embedded optimization problems has not been studied so extensively. Our purpose is to study the behavior of such algorithms as solvers of control-related problems of that scale. Our effort focuses on identifying special characteristics of these problems and how they can be exploited by some popular splitting methods. 
+
+In this survey, the focus is placed on three splitting methods that have been theoretically well-established and have become very popular in recent years, namely the \emph{Alternating Direction Method of Mulitpliers (ADMM)}, the \emph{Alternating Minimization Algorithm (AMA)} and the \emph{Primal-Dual Hybrid Gradient Method (PDHG)}. The survey consists of four main sections. In the section \emph{The algorithms}, the main focus is to explain how these three methods came to be, and how they can be derived from a common ancestor, the \emph{Proximal Alternating Direction Method of Mulitpliers}, based on recent results coming from the mathematical programming community. A brief introduction to each of the methods is consequently given. In the section \emph{Accelerated convergence} we discuss the convergence rates of the algorithms and introduce their accelerated versions. Thereby, a family of new algorithms is derived after small modifications of the original three, that bring in optimal convergence rates, based on recent complexity results. Much effort is placed in exhibiting the techniques used to practically speed up the algorithms' convergence, as they appear in the section \emph{Practical speedup}. As it commonly happens with first-order methods, there is a plethora of tuning parameters that can radically change the algorithmic behavior, such as stepsize selection, preconditioning, as well as numerical linear algebra routines used to deal with linear system solves. Old and recent contributions are put in a comprehensive framework, and the nature of the control problems appear to play a significant role here, allowing for more options like, \eg, the Riccati recursion algorithm and warm-starting. Finally, an extensive numerical study is presented in the \emph{Examples} section, where four carefully selected control systems, two of which correspond to real setups, demonstrate the applicability of the methods. The examples that are presented belong to different classes of convex optimization problems, so as to evaluate the algorithms' behavior in a wider spectrum.
+In addition, a toolbox that deploys code for all of these problems and utilizes the lessons learned from the rest of the survey has been developed.
+
+\section{Contents}
+\begin{itemize}
+ \item \textbf{Introduction}
+ \item \textbf{The algorithms}
+       \begin{enumerate}
+       \item Origin of the methods - a unified framework
+       \item Alternating Direction Method of Mulitpliers
+       \item Alternating Minimization Algorithm
+       \item Primal-Dual Hybrid Gradient Method
+       \item Termination
+       \end{enumerate}
+\item \textbf{How to perform the splitting}
+\item \textbf{Accelerated convergence} 
+       \begin{enumerate}
+       \item Sublinear rates
+       \item Linear rates
+       \end{enumerate}  
+\item \textbf{Practical speedup}
+       \begin{enumerate}
+       \item Stepsize selection and variable metric schemes
+       \item Preconditioning and scaling
+       \item Numerical linear algebra
+       \item Warm starting
+       \end{enumerate} 
+\item \textbf{Summary}
+\item \textbf{Examples}
+       \begin{enumerate}
+       \item Boeing 747 tracking MPC
+       \item The planetary soft landing problem
+       \item Building control
+       \item Distributed control
+       \end{enumerate}
+\item \textbf{Appendices}
+\end{itemize}
+
+
+
+
+\end{document}

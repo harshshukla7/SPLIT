@@ -1,0 +1,436 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3ACD874C1A6FEF9600D41AFB /* cholmod_factorize.c in Sources */ = {isa = PBXBuildFile; fileRef = 3ACD874B1A6FEF9600D41AFB /* cholmod_factorize.c */; };
+		3ACD87691A6FFFAD00D41AFB /* libamd.2.4.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD874D1A6FFFAD00D41AFB /* libamd.2.4.1.a */; };
+		3ACD876A1A6FFFAD00D41AFB /* libamd.2.4.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD874E1A6FFFAD00D41AFB /* libamd.2.4.1.a */; };
+		3ACD876B1A6FFFAD00D41AFB /* libbtf.1.2.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD874F1A6FFFAD00D41AFB /* libbtf.1.2.1.a */; };
+		3ACD876C1A6FFFAD00D41AFB /* libbtf.1.2.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87501A6FFFAD00D41AFB /* libbtf.1.2.1.a */; };
+		3ACD876D1A6FFFAD00D41AFB /* libcamd.2.4.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87511A6FFFAD00D41AFB /* libcamd.2.4.1.a */; };
+		3ACD876E1A6FFFAD00D41AFB /* libcamd.2.4.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87521A6FFFAD00D41AFB /* libcamd.2.4.1.a */; };
+		3ACD876F1A6FFFAD00D41AFB /* libccolamd.2.9.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87531A6FFFAD00D41AFB /* libccolamd.2.9.1.a */; };
+		3ACD87701A6FFFAD00D41AFB /* libccolamd.2.9.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87541A6FFFAD00D41AFB /* libccolamd.2.9.1.a */; };
+		3ACD87711A6FFFAD00D41AFB /* libcholmod.3.0.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87551A6FFFAD00D41AFB /* libcholmod.3.0.3.a */; };
+		3ACD87721A6FFFAD00D41AFB /* libcholmod.3.0.5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87561A6FFFAD00D41AFB /* libcholmod.3.0.5.a */; };
+		3ACD87731A6FFFAD00D41AFB /* libcholmod.3.0.5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87571A6FFFAD00D41AFB /* libcholmod.3.0.5.a */; };
+		3ACD87741A6FFFAD00D41AFB /* libcolamd.2.9.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87581A6FFFAD00D41AFB /* libcolamd.2.9.1.a */; };
+		3ACD87751A6FFFAD00D41AFB /* libcolamd.2.9.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87591A6FFFAD00D41AFB /* libcolamd.2.9.1.a */; };
+		3ACD87761A6FFFAD00D41AFB /* libcxsparse.3.1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD875A1A6FFFAD00D41AFB /* libcxsparse.3.1.4.a */; };
+		3ACD87771A6FFFAD00D41AFB /* libcxsparse.3.1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD875B1A6FFFAD00D41AFB /* libcxsparse.3.1.4.a */; };
+		3ACD87781A6FFFAD00D41AFB /* libklu.1.3.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD875C1A6FFFAD00D41AFB /* libklu.1.3.2.a */; };
+		3ACD87791A6FFFAD00D41AFB /* libklu.1.3.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD875D1A6FFFAD00D41AFB /* libklu.1.3.2.a */; };
+		3ACD877A1A6FFFAD00D41AFB /* libldl.2.2.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD875E1A6FFFAD00D41AFB /* libldl.2.2.1.a */; };
+		3ACD877B1A6FFFAD00D41AFB /* libldl.2.2.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD875F1A6FFFAD00D41AFB /* libldl.2.2.1.a */; };
+		3ACD877C1A6FFFAD00D41AFB /* librbio.2.2.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87601A6FFFAD00D41AFB /* librbio.2.2.1.a */; };
+		3ACD877D1A6FFFAD00D41AFB /* librbio.2.2.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87611A6FFFAD00D41AFB /* librbio.2.2.1.a */; };
+		3ACD877E1A6FFFAD00D41AFB /* libspqr.2.0.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87621A6FFFAD00D41AFB /* libspqr.2.0.0.a */; };
+		3ACD877F1A6FFFAD00D41AFB /* libspqr.2.0.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87631A6FFFAD00D41AFB /* libspqr.2.0.0.a */; };
+		3ACD87801A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87641A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.0.a */; };
+		3ACD87811A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87651A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a */; };
+		3ACD87821A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87661A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a */; };
+		3ACD87831A6FFFAD00D41AFB /* libumfpack.5.7.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87671A6FFFAD00D41AFB /* libumfpack.5.7.1.a */; };
+		3ACD87841A6FFFAD00D41AFB /* libumfpack.5.7.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87681A6FFFAD00D41AFB /* libumfpack.5.7.1.a */; };
+		3ACD87861A7000B500D41AFB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ACD87851A7000B500D41AFB /* Accelerate.framework */; };
+		3ACD87881A73095400D41AFB /* ldl_suitesparse.c in Sources */ = {isa = PBXBuildFile; fileRef = 3ACD87871A73095400D41AFB /* ldl_suitesparse.c */; };
+		3AF1F61E1A5AD3DD002D2A4E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1F61D1A5AD3DD002D2A4E /* main.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3AF1F6181A5AD3DD002D2A4E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		3ACD87171A6FEB8800D41AFB /* libamd.2.4.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libamd.2.4.1.a; path = ../../../../../usr/local/lib/libamd.2.4.1.a; sourceTree = "<group>"; };
+		3ACD87181A6FEB8800D41AFB /* libamd.2.4.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libamd.2.4.1.a; path = ../../../../../usr/local/lib/libamd.2.4.1.a; sourceTree = "<group>"; };
+		3ACD87191A6FEB8800D41AFB /* libbtf.1.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbtf.1.2.1.a; path = ../../../../../usr/local/lib/libbtf.1.2.1.a; sourceTree = "<group>"; };
+		3ACD871A1A6FEB8800D41AFB /* libbtf.1.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbtf.1.2.1.a; path = ../../../../../usr/local/lib/libbtf.1.2.1.a; sourceTree = "<group>"; };
+		3ACD871B1A6FEB8800D41AFB /* libcamd.2.4.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcamd.2.4.1.a; path = ../../../../../usr/local/lib/libcamd.2.4.1.a; sourceTree = "<group>"; };
+		3ACD871C1A6FEB8800D41AFB /* libcamd.2.4.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcamd.2.4.1.a; path = ../../../../../usr/local/lib/libcamd.2.4.1.a; sourceTree = "<group>"; };
+		3ACD871D1A6FEB8800D41AFB /* libccolamd.2.9.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libccolamd.2.9.1.a; path = ../../../../../usr/local/lib/libccolamd.2.9.1.a; sourceTree = "<group>"; };
+		3ACD871E1A6FEB8800D41AFB /* libccolamd.2.9.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libccolamd.2.9.1.a; path = ../../../../../usr/local/lib/libccolamd.2.9.1.a; sourceTree = "<group>"; };
+		3ACD871F1A6FEB8800D41AFB /* libcholmod.3.0.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcholmod.3.0.3.a; path = ../../../../../usr/local/lib/libcholmod.3.0.3.a; sourceTree = "<group>"; };
+		3ACD87201A6FEB8800D41AFB /* libcholmod.3.0.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcholmod.3.0.3.a; path = ../../../../../usr/local/lib/libcholmod.3.0.3.a; sourceTree = "<group>"; };
+		3ACD87211A6FEB8800D41AFB /* libcolamd.2.9.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcolamd.2.9.1.a; path = ../../../../../usr/local/lib/libcolamd.2.9.1.a; sourceTree = "<group>"; };
+		3ACD87221A6FEB8800D41AFB /* libcolamd.2.9.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcolamd.2.9.1.a; path = ../../../../../usr/local/lib/libcolamd.2.9.1.a; sourceTree = "<group>"; };
+		3ACD87231A6FEB8800D41AFB /* libcxsparse.3.1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcxsparse.3.1.4.a; path = ../../../../../usr/local/lib/libcxsparse.3.1.4.a; sourceTree = "<group>"; };
+		3ACD87241A6FEB8800D41AFB /* libcxsparse.3.1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcxsparse.3.1.4.a; path = ../../../../../usr/local/lib/libcxsparse.3.1.4.a; sourceTree = "<group>"; };
+		3ACD87251A6FEB8800D41AFB /* libklu.1.3.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libklu.1.3.2.a; path = ../../../../../usr/local/lib/libklu.1.3.2.a; sourceTree = "<group>"; };
+		3ACD87261A6FEB8800D41AFB /* libklu.1.3.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libklu.1.3.2.a; path = ../../../../../usr/local/lib/libklu.1.3.2.a; sourceTree = "<group>"; };
+		3ACD87271A6FEB8800D41AFB /* libldl.2.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libldl.2.2.1.a; path = ../../../../../usr/local/lib/libldl.2.2.1.a; sourceTree = "<group>"; };
+		3ACD87281A6FEB8800D41AFB /* libldl.2.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libldl.2.2.1.a; path = ../../../../../usr/local/lib/libldl.2.2.1.a; sourceTree = "<group>"; };
+		3ACD87291A6FEB8800D41AFB /* librbio.2.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librbio.2.2.1.a; path = ../../../../../usr/local/lib/librbio.2.2.1.a; sourceTree = "<group>"; };
+		3ACD872A1A6FEB8800D41AFB /* librbio.2.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librbio.2.2.1.a; path = ../../../../../usr/local/lib/librbio.2.2.1.a; sourceTree = "<group>"; };
+		3ACD872B1A6FEB8800D41AFB /* libspqr.2.0.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspqr.2.0.0.a; path = ../../../../../usr/local/lib/libspqr.2.0.0.a; sourceTree = "<group>"; };
+		3ACD872C1A6FEB8800D41AFB /* libspqr.2.0.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspqr.2.0.0.a; path = ../../../../../usr/local/lib/libspqr.2.0.0.a; sourceTree = "<group>"; };
+		3ACD872D1A6FEB8800D41AFB /* libsuitesparseconfig.4.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsuitesparseconfig.4.4.0.a; path = ../../../../../usr/local/lib/libsuitesparseconfig.4.4.0.a; sourceTree = "<group>"; };
+		3ACD872E1A6FEB8800D41AFB /* libsuitesparseconfig.4.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsuitesparseconfig.4.4.0.a; path = ../../../../../usr/local/lib/libsuitesparseconfig.4.4.0.a; sourceTree = "<group>"; };
+		3ACD872F1A6FEB8800D41AFB /* libumfpack.5.7.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libumfpack.5.7.1.a; path = ../../../../../usr/local/lib/libumfpack.5.7.1.a; sourceTree = "<group>"; };
+		3ACD87301A6FEB8800D41AFB /* libumfpack.5.7.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libumfpack.5.7.1.a; path = ../../../../../usr/local/lib/libumfpack.5.7.1.a; sourceTree = "<group>"; };
+		3ACD874B1A6FEF9600D41AFB /* cholmod_factorize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cholmod_factorize.c; path = ../../Cholesky/cholmod_factorize.c; sourceTree = "<group>"; };
+		3ACD874D1A6FFFAD00D41AFB /* libamd.2.4.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libamd.2.4.1.a; path = ../../../../../../usr/local/lib/libamd.2.4.1.a; sourceTree = "<group>"; };
+		3ACD874E1A6FFFAD00D41AFB /* libamd.2.4.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libamd.2.4.1.a; path = ../../../../../../usr/local/lib/libamd.2.4.1.a; sourceTree = "<group>"; };
+		3ACD874F1A6FFFAD00D41AFB /* libbtf.1.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbtf.1.2.1.a; path = ../../../../../../usr/local/lib/libbtf.1.2.1.a; sourceTree = "<group>"; };
+		3ACD87501A6FFFAD00D41AFB /* libbtf.1.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbtf.1.2.1.a; path = ../../../../../../usr/local/lib/libbtf.1.2.1.a; sourceTree = "<group>"; };
+		3ACD87511A6FFFAD00D41AFB /* libcamd.2.4.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcamd.2.4.1.a; path = ../../../../../../usr/local/lib/libcamd.2.4.1.a; sourceTree = "<group>"; };
+		3ACD87521A6FFFAD00D41AFB /* libcamd.2.4.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcamd.2.4.1.a; path = ../../../../../../usr/local/lib/libcamd.2.4.1.a; sourceTree = "<group>"; };
+		3ACD87531A6FFFAD00D41AFB /* libccolamd.2.9.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libccolamd.2.9.1.a; path = ../../../../../../usr/local/lib/libccolamd.2.9.1.a; sourceTree = "<group>"; };
+		3ACD87541A6FFFAD00D41AFB /* libccolamd.2.9.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libccolamd.2.9.1.a; path = ../../../../../../usr/local/lib/libccolamd.2.9.1.a; sourceTree = "<group>"; };
+		3ACD87551A6FFFAD00D41AFB /* libcholmod.3.0.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcholmod.3.0.3.a; path = ../../../../../../usr/local/lib/libcholmod.3.0.3.a; sourceTree = "<group>"; };
+		3ACD87561A6FFFAD00D41AFB /* libcholmod.3.0.5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcholmod.3.0.5.a; path = ../../../../../../usr/local/lib/libcholmod.3.0.5.a; sourceTree = "<group>"; };
+		3ACD87571A6FFFAD00D41AFB /* libcholmod.3.0.5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcholmod.3.0.5.a; path = ../../../../../../usr/local/lib/libcholmod.3.0.5.a; sourceTree = "<group>"; };
+		3ACD87581A6FFFAD00D41AFB /* libcolamd.2.9.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcolamd.2.9.1.a; path = ../../../../../../usr/local/lib/libcolamd.2.9.1.a; sourceTree = "<group>"; };
+		3ACD87591A6FFFAD00D41AFB /* libcolamd.2.9.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcolamd.2.9.1.a; path = ../../../../../../usr/local/lib/libcolamd.2.9.1.a; sourceTree = "<group>"; };
+		3ACD875A1A6FFFAD00D41AFB /* libcxsparse.3.1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcxsparse.3.1.4.a; path = ../../../../../../usr/local/lib/libcxsparse.3.1.4.a; sourceTree = "<group>"; };
+		3ACD875B1A6FFFAD00D41AFB /* libcxsparse.3.1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcxsparse.3.1.4.a; path = ../../../../../../usr/local/lib/libcxsparse.3.1.4.a; sourceTree = "<group>"; };
+		3ACD875C1A6FFFAD00D41AFB /* libklu.1.3.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libklu.1.3.2.a; path = ../../../../../../usr/local/lib/libklu.1.3.2.a; sourceTree = "<group>"; };
+		3ACD875D1A6FFFAD00D41AFB /* libklu.1.3.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libklu.1.3.2.a; path = ../../../../../../usr/local/lib/libklu.1.3.2.a; sourceTree = "<group>"; };
+		3ACD875E1A6FFFAD00D41AFB /* libldl.2.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libldl.2.2.1.a; path = ../../../../../../usr/local/lib/libldl.2.2.1.a; sourceTree = "<group>"; };
+		3ACD875F1A6FFFAD00D41AFB /* libldl.2.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libldl.2.2.1.a; path = ../../../../../../usr/local/lib/libldl.2.2.1.a; sourceTree = "<group>"; };
+		3ACD87601A6FFFAD00D41AFB /* librbio.2.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librbio.2.2.1.a; path = ../../../../../../usr/local/lib/librbio.2.2.1.a; sourceTree = "<group>"; };
+		3ACD87611A6FFFAD00D41AFB /* librbio.2.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librbio.2.2.1.a; path = ../../../../../../usr/local/lib/librbio.2.2.1.a; sourceTree = "<group>"; };
+		3ACD87621A6FFFAD00D41AFB /* libspqr.2.0.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspqr.2.0.0.a; path = ../../../../../../usr/local/lib/libspqr.2.0.0.a; sourceTree = "<group>"; };
+		3ACD87631A6FFFAD00D41AFB /* libspqr.2.0.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspqr.2.0.0.a; path = ../../../../../../usr/local/lib/libspqr.2.0.0.a; sourceTree = "<group>"; };
+		3ACD87641A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsuitesparseconfig.4.4.0.a; path = ../../../../../../usr/local/lib/libsuitesparseconfig.4.4.0.a; sourceTree = "<group>"; };
+		3ACD87651A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsuitesparseconfig.4.4.3.a; path = ../../../../../../usr/local/lib/libsuitesparseconfig.4.4.3.a; sourceTree = "<group>"; };
+		3ACD87661A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsuitesparseconfig.4.4.3.a; path = ../../../../../../usr/local/lib/libsuitesparseconfig.4.4.3.a; sourceTree = "<group>"; };
+		3ACD87671A6FFFAD00D41AFB /* libumfpack.5.7.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libumfpack.5.7.1.a; path = ../../../../../../usr/local/lib/libumfpack.5.7.1.a; sourceTree = "<group>"; };
+		3ACD87681A6FFFAD00D41AFB /* libumfpack.5.7.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libumfpack.5.7.1.a; path = ../../../../../../usr/local/lib/libumfpack.5.7.1.a; sourceTree = "<group>"; };
+		3ACD87851A7000B500D41AFB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		3ACD87871A73095400D41AFB /* ldl_suitesparse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ldl_suitesparse.c; path = chol_mod_harsh/ldl_suitesparse.c; sourceTree = "<group>"; };
+		3ACD87891A73097900D41AFB /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		3AF1F61A1A5AD3DD002D2A4E /* chol_mod_harsh */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chol_mod_harsh; sourceTree = BUILT_PRODUCTS_DIR; };
+		3AF1F61D1A5AD3DD002D2A4E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3AF1F6171A5AD3DD002D2A4E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3ACD87861A7000B500D41AFB /* Accelerate.framework in Frameworks */,
+				3ACD87691A6FFFAD00D41AFB /* libamd.2.4.1.a in Frameworks */,
+				3ACD876A1A6FFFAD00D41AFB /* libamd.2.4.1.a in Frameworks */,
+				3ACD876B1A6FFFAD00D41AFB /* libbtf.1.2.1.a in Frameworks */,
+				3ACD876C1A6FFFAD00D41AFB /* libbtf.1.2.1.a in Frameworks */,
+				3ACD876D1A6FFFAD00D41AFB /* libcamd.2.4.1.a in Frameworks */,
+				3ACD876E1A6FFFAD00D41AFB /* libcamd.2.4.1.a in Frameworks */,
+				3ACD876F1A6FFFAD00D41AFB /* libccolamd.2.9.1.a in Frameworks */,
+				3ACD87701A6FFFAD00D41AFB /* libccolamd.2.9.1.a in Frameworks */,
+				3ACD87711A6FFFAD00D41AFB /* libcholmod.3.0.3.a in Frameworks */,
+				3ACD87721A6FFFAD00D41AFB /* libcholmod.3.0.5.a in Frameworks */,
+				3ACD87731A6FFFAD00D41AFB /* libcholmod.3.0.5.a in Frameworks */,
+				3ACD87741A6FFFAD00D41AFB /* libcolamd.2.9.1.a in Frameworks */,
+				3ACD87751A6FFFAD00D41AFB /* libcolamd.2.9.1.a in Frameworks */,
+				3ACD87761A6FFFAD00D41AFB /* libcxsparse.3.1.4.a in Frameworks */,
+				3ACD87771A6FFFAD00D41AFB /* libcxsparse.3.1.4.a in Frameworks */,
+				3ACD87781A6FFFAD00D41AFB /* libklu.1.3.2.a in Frameworks */,
+				3ACD87791A6FFFAD00D41AFB /* libklu.1.3.2.a in Frameworks */,
+				3ACD877A1A6FFFAD00D41AFB /* libldl.2.2.1.a in Frameworks */,
+				3ACD877B1A6FFFAD00D41AFB /* libldl.2.2.1.a in Frameworks */,
+				3ACD877C1A6FFFAD00D41AFB /* librbio.2.2.1.a in Frameworks */,
+				3ACD877D1A6FFFAD00D41AFB /* librbio.2.2.1.a in Frameworks */,
+				3ACD877E1A6FFFAD00D41AFB /* libspqr.2.0.0.a in Frameworks */,
+				3ACD877F1A6FFFAD00D41AFB /* libspqr.2.0.0.a in Frameworks */,
+				3ACD87801A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.0.a in Frameworks */,
+				3ACD87811A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a in Frameworks */,
+				3ACD87821A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a in Frameworks */,
+				3ACD87831A6FFFAD00D41AFB /* libumfpack.5.7.1.a in Frameworks */,
+				3ACD87841A6FFFAD00D41AFB /* libumfpack.5.7.1.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3AF1F6111A5AD3DD002D2A4E = {
+			isa = PBXGroup;
+			children = (
+				3ACD87871A73095400D41AFB /* ldl_suitesparse.c */,
+				3ACD87891A73097900D41AFB /* main.h */,
+				3ACD87851A7000B500D41AFB /* Accelerate.framework */,
+				3ACD874D1A6FFFAD00D41AFB /* libamd.2.4.1.a */,
+				3ACD874E1A6FFFAD00D41AFB /* libamd.2.4.1.a */,
+				3ACD874F1A6FFFAD00D41AFB /* libbtf.1.2.1.a */,
+				3ACD87501A6FFFAD00D41AFB /* libbtf.1.2.1.a */,
+				3ACD87511A6FFFAD00D41AFB /* libcamd.2.4.1.a */,
+				3ACD87521A6FFFAD00D41AFB /* libcamd.2.4.1.a */,
+				3ACD87531A6FFFAD00D41AFB /* libccolamd.2.9.1.a */,
+				3ACD87541A6FFFAD00D41AFB /* libccolamd.2.9.1.a */,
+				3ACD87551A6FFFAD00D41AFB /* libcholmod.3.0.3.a */,
+				3ACD87561A6FFFAD00D41AFB /* libcholmod.3.0.5.a */,
+				3ACD87571A6FFFAD00D41AFB /* libcholmod.3.0.5.a */,
+				3ACD87581A6FFFAD00D41AFB /* libcolamd.2.9.1.a */,
+				3ACD87591A6FFFAD00D41AFB /* libcolamd.2.9.1.a */,
+				3ACD875A1A6FFFAD00D41AFB /* libcxsparse.3.1.4.a */,
+				3ACD875B1A6FFFAD00D41AFB /* libcxsparse.3.1.4.a */,
+				3ACD875C1A6FFFAD00D41AFB /* libklu.1.3.2.a */,
+				3ACD875D1A6FFFAD00D41AFB /* libklu.1.3.2.a */,
+				3ACD875E1A6FFFAD00D41AFB /* libldl.2.2.1.a */,
+				3ACD875F1A6FFFAD00D41AFB /* libldl.2.2.1.a */,
+				3ACD87601A6FFFAD00D41AFB /* librbio.2.2.1.a */,
+				3ACD87611A6FFFAD00D41AFB /* librbio.2.2.1.a */,
+				3ACD87621A6FFFAD00D41AFB /* libspqr.2.0.0.a */,
+				3ACD87631A6FFFAD00D41AFB /* libspqr.2.0.0.a */,
+				3ACD87641A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.0.a */,
+				3ACD87651A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a */,
+				3ACD87661A6FFFAD00D41AFB /* libsuitesparseconfig.4.4.3.a */,
+				3ACD87671A6FFFAD00D41AFB /* libumfpack.5.7.1.a */,
+				3ACD87681A6FFFAD00D41AFB /* libumfpack.5.7.1.a */,
+				3ACD87171A6FEB8800D41AFB /* libamd.2.4.1.a */,
+				3ACD87181A6FEB8800D41AFB /* libamd.2.4.1.a */,
+				3ACD87191A6FEB8800D41AFB /* libbtf.1.2.1.a */,
+				3ACD871A1A6FEB8800D41AFB /* libbtf.1.2.1.a */,
+				3ACD871B1A6FEB8800D41AFB /* libcamd.2.4.1.a */,
+				3ACD871C1A6FEB8800D41AFB /* libcamd.2.4.1.a */,
+				3ACD871D1A6FEB8800D41AFB /* libccolamd.2.9.1.a */,
+				3ACD871E1A6FEB8800D41AFB /* libccolamd.2.9.1.a */,
+				3ACD871F1A6FEB8800D41AFB /* libcholmod.3.0.3.a */,
+				3ACD87201A6FEB8800D41AFB /* libcholmod.3.0.3.a */,
+				3ACD87211A6FEB8800D41AFB /* libcolamd.2.9.1.a */,
+				3ACD87221A6FEB8800D41AFB /* libcolamd.2.9.1.a */,
+				3ACD87231A6FEB8800D41AFB /* libcxsparse.3.1.4.a */,
+				3ACD87241A6FEB8800D41AFB /* libcxsparse.3.1.4.a */,
+				3ACD87251A6FEB8800D41AFB /* libklu.1.3.2.a */,
+				3ACD87261A6FEB8800D41AFB /* libklu.1.3.2.a */,
+				3ACD87271A6FEB8800D41AFB /* libldl.2.2.1.a */,
+				3ACD87281A6FEB8800D41AFB /* libldl.2.2.1.a */,
+				3ACD87291A6FEB8800D41AFB /* librbio.2.2.1.a */,
+				3ACD872A1A6FEB8800D41AFB /* librbio.2.2.1.a */,
+				3ACD872B1A6FEB8800D41AFB /* libspqr.2.0.0.a */,
+				3ACD872C1A6FEB8800D41AFB /* libspqr.2.0.0.a */,
+				3ACD872D1A6FEB8800D41AFB /* libsuitesparseconfig.4.4.0.a */,
+				3ACD872E1A6FEB8800D41AFB /* libsuitesparseconfig.4.4.0.a */,
+				3ACD872F1A6FEB8800D41AFB /* libumfpack.5.7.1.a */,
+				3ACD87301A6FEB8800D41AFB /* libumfpack.5.7.1.a */,
+				3AF1F61C1A5AD3DD002D2A4E /* chol_mod_harsh */,
+				3AF1F61B1A5AD3DD002D2A4E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3AF1F61B1A5AD3DD002D2A4E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3AF1F61A1A5AD3DD002D2A4E /* chol_mod_harsh */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3AF1F61C1A5AD3DD002D2A4E /* chol_mod_harsh */ = {
+			isa = PBXGroup;
+			children = (
+				3AF1F61D1A5AD3DD002D2A4E /* main.c */,
+				3ACD874B1A6FEF9600D41AFB /* cholmod_factorize.c */,
+			);
+			path = chol_mod_harsh;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3AF1F6191A5AD3DD002D2A4E /* chol_mod_harsh */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3AF1F6211A5AD3DD002D2A4E /* Build configuration list for PBXNativeTarget "chol_mod_harsh" */;
+			buildPhases = (
+				3AF1F6161A5AD3DD002D2A4E /* Sources */,
+				3AF1F6171A5AD3DD002D2A4E /* Frameworks */,
+				3AF1F6181A5AD3DD002D2A4E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = chol_mod_harsh;
+			productName = chol_mod_harsh;
+			productReference = 3AF1F61A1A5AD3DD002D2A4E /* chol_mod_harsh */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3AF1F6121A5AD3DD002D2A4E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "harsh shukla";
+				TargetAttributes = {
+					3AF1F6191A5AD3DD002D2A4E = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
+			};
+			buildConfigurationList = 3AF1F6151A5AD3DD002D2A4E /* Build configuration list for PBXProject "chol_mod_harsh" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 3AF1F6111A5AD3DD002D2A4E;
+			productRefGroup = 3AF1F61B1A5AD3DD002D2A4E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3AF1F6191A5AD3DD002D2A4E /* chol_mod_harsh */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3AF1F6161A5AD3DD002D2A4E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3ACD87881A73095400D41AFB /* ldl_suitesparse.c in Sources */,
+				3ACD874C1A6FEF9600D41AFB /* cholmod_factorize.c in Sources */,
+				3AF1F61E1A5AD3DD002D2A4E /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3AF1F61F1A5AD3DD002D2A4E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		3AF1F6201A5AD3DD002D2A4E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		3AF1F6221A5AD3DD002D2A4E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/usr/local/include/**",
+				);
+				LIBRARY_SEARCH_PATHS = "/usr/local/lib/**";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/include/** /Users/harsh/Programming/SuiteSparse/**";
+			};
+			name = Debug;
+		};
+		3AF1F6231A5AD3DD002D2A4E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/usr/local/include/**",
+				);
+				LIBRARY_SEARCH_PATHS = "/usr/local/lib/**";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/include/**";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3AF1F6151A5AD3DD002D2A4E /* Build configuration list for PBXProject "chol_mod_harsh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3AF1F61F1A5AD3DD002D2A4E /* Debug */,
+				3AF1F6201A5AD3DD002D2A4E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3AF1F6211A5AD3DD002D2A4E /* Build configuration list for PBXNativeTarget "chol_mod_harsh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3AF1F6221A5AD3DD002D2A4E /* Debug */,
+				3AF1F6231A5AD3DD002D2A4E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3AF1F6121A5AD3DD002D2A4E /* Project object */;
+}

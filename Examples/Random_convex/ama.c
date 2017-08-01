@@ -1,0 +1,1 @@
+../../split/coder/src/ama.c

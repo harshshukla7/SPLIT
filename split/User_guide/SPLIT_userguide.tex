@@ -1,0 +1,96 @@
+\documentclass[]{article}
+
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+
+\begin{document}
+
+\title{User Guide}
+\date{}
+\maketitle
+\tableofcontents
+
+
+\section{Installation}
+
+\subsection{External Softwares}
+
+\begin{itemize}
+\item Linux
+\begin{itemize}
+\item \textbf{cLapack:} install liblapacke-dev (it’s also available in synaptic package manager)
+\item \textbf{ATLAS: } \textit{sudo apt-get install libatlas-base-dev}
+
+\item  \textbf{SuiteSparse: } 
+
+\begin{itemize}
+\item \textit{sudo apt-get install build-essential} (If Linux is freshly installed and it does not have g++)
+\item Download Suitesparse unzip it and go to home folder. 
+\item change directory of terminal to home folder 
+\item  \textit{make library} 
+
+\item \textit{sudo make install }
+\end{itemize}
+
+\end{itemize}
+
+\item Mac : 
+\begin{itemize}
+\item \textbf{SuiteSparse: } Follow the read me file provided with SuiteSparse. 
+\end{itemize}
+\end{itemize}
+\section{Generating a problem and compiling in c}
+\begin{enumerate}
+\item \textbf{Adding a path: } Download alternative-direction-toolbox.  Open the matlab and add “alternative-direction-toolbox/split” folder to matlab path.
+
+\item \textbf{Define a problem in MATLAB: } 
+
+\begin{itemize}
+\item \textbf{For Mac: } change matlab path to “alternative-direction-toolbox/split/test/testSplitCoder” and  open the 	file “testSplitCoder.m”. Define a problem there. For reference, different constraints and different  algorithms are illustrated with comments.
+
+\item \textbf{For Linux: } change matlab path to “alternative-direction-toolbox/split/test/testLinux” and  open the file “testSplitCoder.m”.  For the reference different constraints and different  algorithms are illustrated with comment.
+\end{itemize}
+
+\item \textbf{Code and data generation: }  Once the problem is defined in m file (use testSplitCoder.m as a template) run the file and it will solve the optimisation problem in matlab. It will also create file called probdata.c and probate.h in the current matlab path.
+
+\item \textbf{For linux only: }   
+
+\begin{itemize}
+ \item  delete \#include “accelerate.h” from the probate.h 
+\item  add following lines in probdata.h file. 
+
+\begin{itemize}
+\item                                 \#include “clapack.h” 
+\item				 \#include”cblas.h” 
+\item				\# include “clapack\_mac.h”
+\item				\#include “lapacke.h” 
+\end{itemize}
+\end{itemize}
+
+\item Enter the following 2 command in terminal to compile.
+
+\begin{itemize}
+\item \textit{make clean }
+\item \textit{make}
+\end{itemize}
+\end{enumerate} 
+
+
+\section{Selecting Linear Algebra Packages: }
+
+\subsection{Linear Solver: }
+
+\subsubsection{SuiteSparse: }
+
+\subsubsection{cLAPACK: }
+
+\subsubsection{Library free computation: }
+
+\subsection{Matrix Vector Multiplication: }
+\subsubsection{SuiteSparse: }
+
+\subsubsection{cLAPACK: }
+
+\subsubsection{Library free computation: }
+
+
+\end{document}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>6445BA0F-D662-4647-927A-7F3173DB5561</string>
+	<key>IDESourceControlProjectName</key>
+	<string>chol_mod_harsh</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>8CE4DD03290E9E285BFFB04D066EDD5A7BB0626C</key>
+		<string>https://git.epfl.ch/repo/alternating-direction-toolbox.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SuiteSparse/CHOLMOD/chol_mod_harsh/chol_mod_harsh.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>8CE4DD03290E9E285BFFB04D066EDD5A7BB0626C</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://git.epfl.ch/repo/alternating-direction-toolbox.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>8CE4DD03290E9E285BFFB04D066EDD5A7BB0626C</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8CE4DD03290E9E285BFFB04D066EDD5A7BB0626C</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Programming</string>
+		</dict>
+	</array>
+</dict>
+</plist>

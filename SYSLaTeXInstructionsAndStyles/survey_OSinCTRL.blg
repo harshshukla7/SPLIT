@@ -1,0 +1,91 @@
+This is BibTeX, Version 0.99d (TeX Live 2013)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: survey_OSinCTRL.aux
+The style file: plain.bst
+Database file #1: biblio_survey.bib
+I was expecting a `,' or a `}'---line 157 of file biblio_survey.bib
+ : 
+ : @article{GloMar,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 1015 of file biblio_survey.bib
+ : 
+ : journal={SIAM Journal on Optimization}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Name 1 in "S.P. Boyd, and L. Vandenberghe" has a comma at the end for entry cvxbook
+while executing---line 1049 of file plain.bst
+Name 1 in "K. J. Arrow, L. Hurwicz, and H. Uzawa" has a comma at the end for entry AH
+while executing---line 1049 of file plain.bst
+Name 1 in "A. Chambolle, and T. Pock" has a comma at the end for entry chamb
+while executing---line 1049 of file plain.bst
+Name 1 in "B. O'Donoghue, and G. Stathopoulos, and S. Boyd" has a comma at the end for entry soc
+while executing---line 1049 of file plain.bst
+Name 2 in "B. O'Donoghue, and G. Stathopoulos, and S. Boyd" has a comma at the end for entry soc
+while executing---line 1049 of file plain.bst
+Name 1 in "B. O'Donoghue, and E.J. Candes" has a comma at the end for entry adarestart
+while executing---line 1049 of file plain.bst
+Warning--empty publisher in quasi_newton
+Name 1 in "S.P. Boyd, and L. Vandenberghe" has a comma at the end for entry cvxbook
+while executing---line 1090 of file plain.bst
+Name 1 in "A. Chambolle, and T. Pock" has a comma at the end for entry chamb
+while executing---line 1090 of file plain.bst
+Warning--empty journal in PDOS
+Warning--empty journal in condat2011primal
+Warning--empty publisher in esser
+Warning--empty journal in GloMar
+Warning--empty journal in Guer:1992
+Warning--empty year in Guer:1992
+Name 1 in "K. J. Arrow, L. Hurwicz, and H. Uzawa" has a comma at the end for entry AH
+while executing---line 1090 of file plain.bst
+Warning--empty publisher in nestbook
+Name 1 in "B. O'Donoghue, and E.J. Candes" has a comma at the end for entry adarestart
+while executing---line 1090 of file plain.bst
+Name 1 in "B. O'Donoghue, and G. Stathopoulos, and S. Boyd" has a comma at the end for entry soc
+while executing---line 1090 of file plain.bst
+Name 2 in "B. O'Donoghue, and G. Stathopoulos, and S. Boyd" has a comma at the end for entry soc
+while executing---line 1090 of file plain.bst
+Warning--empty journal in Powell
+Warning--empty year in Powell
+You've used 92 entries,
+            2118 wiz_defined-function locations,
+            947 strings with 18290 characters,
+and the built_in function-call counts, 25520 in all, are:
+= -- 2455
+> -- 1234
+< -- 7
++ -- 502
+- -- 393
+* -- 1459
+:= -- 4449
+add.period$ -- 280
+call.type$ -- 92
+change.case$ -- 460
+chr.to.int$ -- 0
+cite$ -- 102
+duplicate$ -- 1048
+empty$ -- 1997
+format.name$ -- 393
+if$ -- 5272
+int.to.chr$ -- 0
+int.to.str$ -- 92
+missing$ -- 96
+newline$ -- 460
+num.names$ -- 186
+pop$ -- 565
+preamble$ -- 1
+purify$ -- 379
+quote$ -- 0
+skip$ -- 769
+stack$ -- 0
+substring$ -- 1043
+swap$ -- 165
+text.length$ -- 7
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 346
+warning$ -- 10
+while$ -- 229
+width$ -- 94
+write$ -- 935
+(There were 14 error messages)

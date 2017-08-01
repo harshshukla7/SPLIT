@@ -1,0 +1,94 @@
+%% Required for alpha / Giorgos release
+
+x add symmetric matrices
+  x definition
+  x test if matrix is symmetric
+x add containment constraints
+  x box
+  x normBall
+  x positive
+  x semiDefiniteCone
+x add inequality constraints
+  x auto-detection of symmetric matrices and conversion to semiDefinite
+
+- recover variables from solver output
+
+
+%% Later
+- add proximal constraints to objective
+  - back-track liftings to find prox operators
+  - back-track liftings to find quadratic costs
+- add matrix norms
+  - max-norm
+  - 2-norm
+  - frobenius
+  - 1-norm
+  - inf-norm
+- add schatten norms
+- add colored error messages and custom asserts
+- trace-back for constraints
+  - detect upper/lower bounds
+  - detect norm-balls
+- function to write all variables back to their double values
+- add auto-lifting
+  - norms
+    - 1
+    - inf
+    - 2
+  - quadratic -> secondOrderCone
+
+
+- add interfaces for:
+  - FORCES
+  - FIORDOS
+  - SDPT3
+  - CPLEX
+  - GUROBI
+
+
+%% Functions to be implemented
+Linear functions
+conv, cumsum, find, fliplr, flipud, flipdim, hankel, ipermute, kron, mean, permute, repmat, reshape, rot90, tril, triu, toeplitz
+
+Nonlinear
+max
+min
+norm (1, 2, inf)
+huber
+pos = max{x,0}
+quad_form
+square
+square_pos max{x,0}^2
+
+
+Sets
+nonnegative
+simplex
+lorentz
+norm_ball
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%
+%% YALMIP-like syntax
+%%%%%%%%%%%%%%%%%%%%%
+
+con = {x < 2; y > 3; lb < x < ub};
+
+%%%%%%%%%%%%%%%%%%%%%
+%% CVX-like syntax
+%%%%%%%%%%%%%%%%%%%%%
+
+x < 2
+y > 3
+inBox(x, lb, ub)
+
+%%%%%%%%%%%%%%%%%%%%%
+%% JAVA-like syntax
+%%%%%%%%%%%%%%%%%%%%%
+
+con.add(x < 2)
+con.add(y > 3)
+con.inbox(x, lb, ub)
+
