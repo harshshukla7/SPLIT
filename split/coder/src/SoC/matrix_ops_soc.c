@@ -13,46 +13,39 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "user_matrix_ops.h"
+#include "matrix_ops.h"
 
 static int i;
 
-// void print_vector(const char *name, const real *x, const int len)
-// {
-//   printf("%s = [", name);
-//   char sep = ' ';
-//   forall(len) {printf("%c%g", sep, x[i]); sep=',';}
-//   printf("]\n");
-// }
-
-void copy_vector( real *y, const real *x, int len){
-
- loop_copy_vector_matops:   for(i=0; i<len; i++){
-#pragma HLS PIPELINE
-        
-      y[i] = x[i];  
-    }
-}
-// returns sum(x)
-real sum_vector(const real *x, const int len)
+void print_vector(const char *name, const double *x, const int len)
 {
-	real z = 0.0;
+  printf("%s = [", name);
+  char sep = ' ';
+  forall(len) {printf("%c%g", sep, x[i]); sep=',';}
+  printf("]\n");
+}
+
+
+// returns sum(x)
+double sum_vector(const double *x, const int len)
+{
+	double z = 0.0;
 	for(int i=0; i<len; i++) z += x[i];
    return z;
 }
 
 // returns sum(x.*x)
-real sum_squared(const real *x, const int len)
+double sum_squared(const double *x, const int len)
 {
-  real z = 0.0;
+  double z = 0.0;
   forall(len) z += x[i]*x[i];
   return z;
 }
 
 // returns sum(|x|)
-real sum_absolute(const real *x, const int len)
+double sum_absolute(const double *x, const int len)
 {
-    real z = 0.0;
+    double z = 0.0;
     forall(len) z += fabs(x[i]);
     return z;
 }
@@ -60,43 +53,43 @@ real sum_absolute(const real *x, const int len)
 
 // y = alpha*x
 // Safe to scale in place (i.e., y=x)
-void scale_vector(real *y, const real alpha, const real *x, const int len)
+void scale_vector(double *y, const double alpha, const double *x, const int len)
 {
 	for(int i=0; i<len; i++) y[i] = alpha*x[i];
 }
 
 // returns <x,y>
-real dot_vector(const real *x, const real *y, const int len)
+double dot_vector(const double *x, const double *y, const int len)
 {
-	real z = 0.0;
+	double z = 0.0;
 	for(int i=0; i<len; i++) z += x[i]*y[i];
    return z;
 }
 
 // add constant to each element of vector
 
-void vector_constant_addition(real *y, const real *x, real addvalue, const int len){
+void vector_constant_addition(double *y, const double *x, double addvalue, const int len){
 	for (int i=0; i<len; i++) y[i] = x[i] + addvalue;
 }
 // divide each  element of vector :
 
-
-void divide_vector_elements(real *y, real *x, const int len )
+#if 0
+void divide_vector_elements(double *y, double *x, const int len )
 {
 
 	for(int i=0; i<len; i++) y[i] = 1/x[i];
 }
 
 
-void scale_add_vector(real *z, real *y, real *x, real multiplayer, const int len )
+void scale_add_vector(double *z, double *y, double *x, double multiplayer, const int len )
 {
 
 	for(int i=0; i<len; i++) z[i] = y[i] + multiplayer*x[i];
 }
-
+#endif
 // returns y = M*x
 // Assumes that M is stored in row-major format
-void matvec_product(const real *M, const real *x, real *y, const int nrows, const int ncols)
+void matvec_product(const double *M, const double *x, double *y, const int nrows, const int ncols)
 {
   for(int r=0; r<nrows; r++) {
     y[r] = 0.0;
@@ -110,7 +103,7 @@ void matvec_product(const real *M, const real *x, real *y, const int nrows, cons
 // Proximal operators
 
 // x = argmin rho*||x||_p + 1/2*||z - x||_2^2 
-void prox_norm_one(real *xprox, const real *x, const real t, const int len)
+void prox_norm_one(double *xprox, const double *x, const double t, const int len)
 {
    
   forall(len) {
@@ -120,7 +113,7 @@ void prox_norm_one(real *xprox, const real *x, const real t, const int len)
   }
 } 
 
-/*void prox_norm_one(real *xprox, const real *x, const real t, const int len)
+/*void prox_norm_one(double *xprox, const double *x, const double t, const int len)
 {
    
   forall(len) {
@@ -133,9 +126,9 @@ void prox_norm_one(real *xprox, const real *x, const real t, const int len)
 
  
 
-void prox_norm_two(real *xprox, const real *x, const real t, const int len)
+void prox_norm_two(double *xprox, const double *x, const double t, const int len)
 { 
-  real tinv, alpha, nx;
+  double tinv, alpha, nx;
   tinv = 1.0/t;
   forall(len) xprox[i] = x[i]*tinv;
   nx = norm_two(xprox, len);
@@ -148,28 +141,28 @@ void prox_norm_two(real *xprox, const real *x, const real t, const int len)
 
 
 /*
-void prox_norm_inf(real *xprox, const real *x, const real t, const int len)
+void prox_norm_inf(double *xprox, const double *x, const double t, const int len)
 {
-    real rho;
+    double rho;
     rho = 1/t;
     forall(len) xprox[i] = x[i]*rho;
-    proj_normball_one(real *xprox, real *xprox, 1, const int len);
+    proj_normball_one(double *xprox, double *xprox, 1, const int len);
     forall(len) xprox[i] = x[i] - t*xprox[i];
 }
 */
 
-/*void prox_norm_inf(real *xprox, const real *x, const real t, const int len)
+/*void prox_norm_inf(double *xprox, const double *x, const double t, const int len)
 {
     
     
 }*/
 /*
-void prox_norm_inf(real *x, real *z, real rho)
+void prox_norm_inf(double *x, double *z, double rho)
 { t = 1/rho;
   x = z - t*proj_normBall_one(z/t, -- (used to be pdual));
 }
 
-void proj_normball_one(real *x, const real *z, const real c) 
+void proj_normball_one(double *x, const double *z, const double c) 
 {
   z = z/c;
  nz = norm(z, 1);
@@ -198,9 +191,9 @@ x = (z+lam < 0) .* (z+lam)  + (z-lam > 0) .* (z-lam);
    While comparing with the algorithm written note that in c all the array are shifted by 1 i.e. array starts from 
    0 not 1. */
 
-void proj_normball_one(real *xproj, real *x, const real c, const int len)
+void proj_normball_one(double *xproj, double *x, const double c, const int len)
 {
-    real tmp_norm, tmp_lambda, tmp_sum, tmp_glambda;
+    double tmp_norm, tmp_lambda, tmp_sum, tmp_glambda;
     int i;
     //int len1=len+1;
     
@@ -273,15 +266,15 @@ void proj_normball_one(real *xproj, real *x, const real c, const int len)
 
 
 //////////////////////////////////////////
-void proj_normball_two(real *xproj, const real *x, const real c, const int len)
+void proj_normball_two(double *xproj, const double *x, const double c, const int len)
 {
-  real nz = norm_two(x, len);
+  double nz = norm_two(x, len);
   //printf("c in normball two is %f \n", c);
   if (nz <= c)  copy_vector(xproj,x,len);
   else          scale_vector(xproj, c/nz, x, len);
 }
 
-void proj_normball_inf(real *xproj, const real *x, const real c, const int len)
+void proj_normball_inf(double *xproj, const double *x, const double c, const int len)
 {
   for(int i=0; i<len; i++) {
     if      (x[i] >  c) xproj[i] =  c;
@@ -290,7 +283,7 @@ void proj_normball_inf(real *xproj, const real *x, const real c, const int len)
   }
 }
 
-void proj_box(real *xproj, const real *x, const real *lb, const real *ub, const int len)
+void proj_box(double *xproj, const double *x, const double *lb, const double *ub, const int len)
 {
   for(int i=0; i<len; i++) {
     if      (x[i] > ub[i]) xproj[i] = ub[i];
@@ -300,14 +293,14 @@ void proj_box(real *xproj, const real *x, const real *lb, const real *ub, const 
 }
 
 // Project the point x = [t;y] onto the second order cone
-void proj_secondOrderCone(real *xproj, const real *x, const int len)
+void proj_secondOrderCone(double *xproj, const double *x, const int len)
 {
      // Solution from Boyd's lecture notes
   // http://www.seas.ucla.edu/~vandenbe/236C/lectures/proxop.pdf
 
-  real t = x[0];
+  double t = x[0];
   //printf("t in second order cone  is %f \n", t);
-  real ny = norm_two(x+1, len-1);
+  double ny = norm_two(x+1, len-1);
 
   if (ny <= t)       copy_vector(xproj, x, len);
   else if (ny <= -t) forall(len) xproj[i] = 0.0;
@@ -320,12 +313,12 @@ void proj_secondOrderCone(real *xproj, const real *x, const int len)
 }
 
 // Project on second-order cone conjugate
-void proj_secondOrderCone_conj(real *xproj, const real *x, const int len)
+void proj_secondOrderCone_conj(double *xproj, const double *x, const int len)
 {
  
 
-  real t = -x[0];
-  real ny = norm_two(x+1, len-1);
+  double t = -x[0];
+  double ny = norm_two(x+1, len-1);
 
   if (ny <= t)       {copy_vector(xproj+1, x+1, len-1); xproj[0] = -x[0];}
   else if (ny <= -t) forall(len) xproj[i] = 0.0;
@@ -340,12 +333,12 @@ void proj_secondOrderCone_conj(real *xproj, const real *x, const int len)
 
 
 
-void proj_negative(real *xproj, const real *x, const int len)
+void proj_negative(double *xproj, const double *x, const int len)
 {
   forall(len) xproj[i] = (x[i] > 0.0) ? 0.0 : x[i];
 }
 
-void proj_positive(real *xproj, const real *x, const int len)
+void proj_positive(double *xproj, const double *x, const int len)
 {
   forall(len) xproj[i] = (x[i] < 0.0) ? 0.0 : x[i];
 }
@@ -356,24 +349,24 @@ Vector norms
 
 /****** I think norm was calculated wrongly. I modified.
  *********************************************/
-real norm_one(const real *x, const int len)
+double norm_one(const double *x, const int len)
 {
-  real n = 0.0;
+  double n = 0.0;
   for(int i=0; i<len; i++) n = x[i] > 0 ? n+x[i] : n-x[i];
     return n;
 }
 
-real norm_two(const real *x, const int len)
-{ real nsqrt;
-  real n = 0.0;
+double norm_two(const double *x, const int len)
+{ double nsqrt;
+  double n = 0.0;
   for(int i=0; i<len; i++) n += x[i]*x[i];
   nsqrt = sqrt(n);
     return nsqrt;
 }
 
-real norm_inf(const real *x, const int len)
+double norm_inf(const double *x, const int len)
 {
-  real n = 0;
+  double n = 0;
   for(int i=0; i<len; i++) {
     if ( x[i] > n) n = x[i];
     if (-x[i] > n) n = -x[i];
@@ -387,9 +380,9 @@ real norm_inf(const real *x, const int len)
  *based on: http://rosettacode.org/wiki/Sorting_algorithms/Quicksort#C
  *********************************************************/
 
-void quick_sort (real *a, int n) {
+void quick_sort (double *a, int n) {
     int i, j;
-    real p, t;
+    double p, t;
     if (n < 2)
         return;
     p = a[n / 2];
@@ -409,10 +402,10 @@ void quick_sort (real *a, int n) {
 }
 
 
-/*void prox_norm_two(real *xprox, const real *x, const real t, const int len)
+/*void prox_norm_two(double *xprox, const double *x, const double t, const int len)
 {  
-  real nx = norm_two(x, len);
-  real alpha = 1.0 - t/nx;
+  double nx = norm_two(x, len);
+  double alpha = 1.0 - t/nx;
   if (nx <= t) forall(len) xprox[i] = 0.0;
   else         forall(len) xprox[i] = x[i]*alpha;
 } */

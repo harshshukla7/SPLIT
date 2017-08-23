@@ -9,27 +9,26 @@
  */
 
 
-#include "user_ama.h"
-
+#include "ama.h"
 //#include "splitTimer.h"
 // Variable Definitions
-static real x[nPrimal+nEqCon]; // Extra rows are working space for solving KKT system
-static real y[nDual];
-static real lambda[nDual];
-static real prev_lambda[nDual];
-static real lambda_hat[nDual];
-static real prev_y[nDual];
-static real y_hat[nDual];
+static double x[nPrimal+nEqCon]; // Extra rows are working space for solving KKT system
+static double y[nDual];
+static double lambda[nDual];
+static double prev_lambda[nDual];
+static double lambda_hat[nDual];
+static double prev_y[nDual];
+static double y_hat[nDual];
 
-static real workDual[nDual];      // Working memory of size dual
-static real kktRHS[nPrimal+nEqCon]; // RHS when solving the KKT system
-static real r[nDual];             // Primal error
-static real s[nPrimal];           // Dual error
+static double workDual[nDual];      // Working memory of size dual
+static double kktRHS[nPrimal+nEqCon]; // RHS when solving the KKT system
+static double r[nDual];             // Primal error
+static double s[nPrimal];           // Dual error
 
 static double beta, beta_k, Ep, ibeta_k, beta_1, ibeta_1;
 
 #ifdef precond
-static real workDual_scale[nDual]; // Tempoary workdual scaled with E^-1
+static double workDual_scale[nDual]; // Tempoary workdual scaled with E^-1
 #endif
 
 #ifdef adaptive_restart
@@ -37,11 +36,9 @@ double ad_rest ;
 #endif
 
 // Initialize values of all variables
-void zero_vector(real *vec, int len) {for(int i=0; i<len; i++) vec[i]=0.0;}
-
-
-//void initialize(real x_in[X_IN_LENGTH_fpga], real y_out[Y_OUT_LENGTH_fpga])
-void initialize(){
+void zero_vector(double *vec, int len) {for(int i=0; i<len; i++) vec[i]=0.0;}
+void initialize()
+{
     
     zero_vector(x, nPrimal);
     zero_vector(y, nDual);
@@ -56,19 +53,15 @@ void initialize(){
     zero_vector(workDual_scale, nDual);
 #endif
     
-    // y_out[Y_OUT_LENGTH_fpga-1] = x_in[X_IN_LENGTH_fpga-1];
     
 }
 
 // Function declaration
-//void solve(Sol *sol, real par[nParam], const Opt *opt, data_t_tol_iterates_in tol_iterates_in_int[TOL_ITERATES_IN_LENGTH], data_t_iterates_out iterates_out_int[ITERATES_OUT_LENGTH] )
-void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
+void solve(Sol *sol, double par[nParam], const Opt *opt)
 {
     
-    //iterates_out_int[0] = tol_iterates_in_int[0];
-    
-    real rDual, rPrimal, rDual_prev, rPrimal_prev;
-    int itr, i, itr_counter;
+    double rDual, rPrimal, rDual_prev, rPrimal_prev;
+    int itr, i;
     
     Ep = 1;
     beta_k = 1; //current_beta
@@ -76,7 +69,7 @@ void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
     rDual = 10 ;
     rPrimal = 10 ;
     
-//     loadData();
+    loadData();
     // Compute: l = pL*par + l_const, etc
 #ifndef precond
     custom_compute_parametric(l, f, b, par);
@@ -94,8 +87,8 @@ void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
     //const double DualTolSquared   = (opt->dualTol)*(opt->dualTol);
     //const double PrimalTolSquared = (opt->primalTol)*(opt->primalTol);
     
-    const real DualTol   = (opt->dualTol);
-    const real PrimalTol = (opt->primalTol);
+    const double DualTol   = (opt->dualTol);
+    const double PrimalTol = (opt->primalTol);
     
     //for (int i=0; i<28; i++){
     //  printf("Ap_ss matrix entry %d is %f \n",i ,Ax_ss );
@@ -123,7 +116,7 @@ for (int i=0; i<38; i++){
     long double start_kkt, end_kkt, sum_time, start_total, end_total; 
     sum_time = 0;    
     //opt->MAXITR
-//     start_total = split_tic();
+    start_total = split_tic();
     for(itr=0; itr < opt->MAXITR ; itr++)
     {
         // Step 1: Nesterov relaxation
@@ -174,11 +167,11 @@ for (int i=0; i<38; i++){
         
         
         //printf("KKT Solve");
-//         start_kkt = split_tic();
+        start_kkt = split_tic();
         custom_solve_kkt(x, kktRHS);
-//         end_kkt = split_toc(start_kkt); 
+        end_kkt = split_toc(start_kkt); 
         //printf("end_KKt is %Lf\n",end_kkt);
-//         sum_time = end_kkt + sum_time;
+        sum_time = end_kkt + sum_time;
         
         ////////////////////////////////////
         ////////// delete the following print line
@@ -358,11 +351,10 @@ for (int i=0; i<38; i++){
          *  Convergence check [Step 6]
          *
          **********************************************************************/
-         itr_counter = itr_counter + 1;
+        
         // Check convergence
-        if (itr_counter == opt->ITR_PER_CONV_TEST)
-        {   itr_counter = 0;
-            rDual_prev = rDual;
+        if (itr % opt->ITR_PER_CONV_TEST == 0)
+        {   rDual_prev = rDual;
             rPrimal_prev = rPrimal;
             
             
@@ -392,14 +384,14 @@ for (int i=0; i<38; i++){
                 
                 if (rPrimal < PrimalTol){
                     
-                    //printf("The loop is broken due to Primal and Dual residual is less than tolerance values.\n");
+                    printf("The loop is broken due to Primal and Dual residual is less than tolerance values.\n");
                     break;
                 }
             }
         }
     }
     
-//     end_total = split_toc(start_total);
+    end_total = split_toc(start_total);
     //////////////////////////////////////
     
     // Copy to solution structure
@@ -409,8 +401,8 @@ for (int i=0; i<38; i++){
     sol->itr = itr;
     sol->rDual = rDual;
     sol->rPrimal = rPrimal;
-   // sol->time_sol = sum_time;
-   // sol->time_total = end_total;
+    sol->time_sol = sum_time;
+    sol->time_total = end_total;
     // Deallocate the memory in case of suitesparse
 #ifdef suitesparse_linsolve
     free(Li_ss);
