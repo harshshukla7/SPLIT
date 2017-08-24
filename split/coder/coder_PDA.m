@@ -67,7 +67,40 @@ if(~isfield(settings, 'Lin_Solve'))
     Lin_Solve = 'auto';
 end
 
+FPGA_PL = 0;
+if(isfield(settings, 'FPGA_PL'))
+    
+    if (settings.FPGA_PL == 1)
+        FPGA_PL = 1;
+        
+        if(~isfield(settings, 'Mat_Vec'))
+            Mat_Vec = 'auto_FPGA';
+        end
+        
+        if(~isfield(settings, 'Lin_Solve'))
+            Lin_Solve = 'auto_FPGA';
+            
+        end
+    end
+    
+end
 
+FPGA_SoC = 0;
+if(isfield(settings, 'FPGA_SoC'))
+    
+    if (settings.FPGA_SoC == 1)
+        FPGA_SoC = 1;
+        
+        if(~isfield(settings, 'Mat_Vec'))
+            Mat_Vec = 'auto';
+        end
+        
+        if(~isfield(settings, 'Lin_Solve'))
+            Lin_Solve = 'auto_FPGA';
+        end
+        
+    end
+end
 
 %% Extrace the data from SpliProb
 
@@ -349,8 +382,22 @@ end
 
 % Compute: l = pL*par + l_const, etc
 
-sd.add_function(coderFunc_parametric('custom_compute_parametric', dat));
-
+% Compute: l = pL*par + l_const, etc
+if FPGA_PL == 1
+    method_para = 'auto_FPGA';
+    sd.add_function(coderFunc_parametric('custom_compute_parametric', dat, 'method', method_para ));
+    
+elseif FPGA_SoC == 1
+    
+    method_para = 'auto';
+    sd.add_function(coderFunc_parametric('custom_compute_parametric', dat, 'method', method_para ));
+    
+else
+    
+    method_para = 'auto';
+    sd.add_function(coderFunc_parametric('custom_compute_parametric', dat, 'method', method_para ));
+    
+end
 %%%% We wont use following variables so set them to zero
 sd.define('nn_lp',0,'int');
 sd.define('LNZ_ss', 0, 'int');

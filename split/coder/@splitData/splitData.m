@@ -240,6 +240,7 @@ classdef splitData < handle
             fprintf(f, '#include <stdio.h>\n');
             fprintf(f, '#include <stdlib.h>\n');
             fprintf(f, '#include <string.h>\n');
+            fprintf(f, '#include "foo_data.h"\n');
             %   fprintf(f, '#ifdef __APPLE__ \n');
             %  fprintf(f, '#include <Accelerate/Accelerate.h>\n');
             %  fprintf(f, '#endif \n');
@@ -256,8 +257,8 @@ classdef splitData < handle
             
             
             
-            fprintf(f, '#define real %s\n', obj.realType);
-            fprintf(f, '#define REAL %s\n', obj.realType);
+            fprintf(f, '#define real data_t_primal_out\n');
+            fprintf(f, '#define REAL data_t_primal_out\n');
             
             
             %fprintf(f, 'typedef %s REAL;\n', obj.realType);

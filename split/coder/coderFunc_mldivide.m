@@ -41,6 +41,7 @@ classdef coderFunc_mldivide < coderFunc
             addParameter(p, 'nPrimal', @isnumeric);
             
             addParameter(p, 'lat', 8, @isnumeric);
+            addParameter(p, 'paral',  @isnumeric);
             
             % Parse and copy the results to the workspace
             parse(p, func_name, A, varargin{:});
@@ -52,7 +53,7 @@ classdef coderFunc_mldivide < coderFunc
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % TODO: guess the best level of parallelism for FPGA and SoC 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            addParameter(p, 'paral', m/2, @isnumeric);
+            
             
             
             assert(m==n, 'func_mldivide currently only solves square matrices')
@@ -63,7 +64,7 @@ classdef coderFunc_mldivide < coderFunc
             if strcmpi(method, 'auto_FPGA')
                 % Try and guess the right method
                 
-                method = 'invert_FPGA';
+                method = 'invert_FPGA_MAC';
             end
             
             
@@ -91,10 +92,11 @@ classdef coderFunc_mldivide < coderFunc
                     % 2. adder latency in settings
                     
                     set_fpga.adder_lat = lat;
-                    split_MV_MAC(H, paral, set_fpga)
+                    parall = paral;
+                    split_MV_MAC(invA, parall, set_fpga);
                     % call the mat-vec generator
                     
-                    f.pl('mv_mult(y[%s], x[%s])', size(invA,1), size(invA,2) );
+                    f.pl('mv_mult(y, x);', size(invA,1), size(invA,2) );
                     
                 case 'invert_FPGA_tree'
                     
@@ -104,7 +106,7 @@ classdef coderFunc_mldivide < coderFunc
                     
                     % call the mat-vec generator
                     
-                    f.pl('mv_mult(y[%s], x[%s])', size(invA,1), size(invA,2) );
+                    f.pl('mv_mult(y, x);', size(invA,1), size(invA,2) );
                     
                     
                 case 'invert_FPGA'

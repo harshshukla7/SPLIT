@@ -91,6 +91,8 @@ if(isfield(settings, 'FPGA_SoC'))
     end
 end
 
+
+
 dat  = prob.coderData;
 sd   = splitData;
 prox  = prob.prox;
@@ -240,6 +242,15 @@ end
 
 K = [Q A'; A zeros(size(A,1))]; %% KKT system matrix
 
+
+if(~isfield(settings, 'latency'))
+    latency = 8;
+end
+
+if(~isfield(settings, 'paral'))
+    paral = floor(size(K,1)/3);
+end
+
 LNZ=nnz(K)-nnz(triu(K));
 ANZ=nnz(triu(K));
 N=size(K,2);
@@ -259,7 +270,9 @@ sd.define('N_ss', N, 'int');
 
 %sd.add_function(coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve));
 
-mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method', Lin_Solve, 'nPrimal', nPrimal_solve);
+mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method', Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , latency, 'paral', paral );
+
+
 if strcmp(mldivide.desc,'ldl_ss')
     sd.cl('double *Lx_ss;');
     sd.cl('int *Li_ss;');
@@ -272,6 +285,11 @@ if strcmp(mldivide.desc,'ldl_lp')
     
     sd.hl('#define lapack_linsolve\n');
     
+end
+
+if (strcmp(mldivide.desc,'invert_FPGA_tree') || strcmp(mldivide.desc,'invert_FPGA_MAC'))
+   
+   sd.hl('#include "user_mv_mult.h" \n'); 
 end
 
 sd.add_function(mldivide);

@@ -7,7 +7,10 @@
 #define __matrix_ops__
 #include <math.h>
 #include <string.h>
-#define real float
+
+#include "foo_data.h"
+#define real data_t_primal_out
+
 
 void print_vector(const char *name, const real *x, const int len);
 

@@ -101,7 +101,7 @@ void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
     //  printf("Ap_ss matrix entry %d is %f \n",i ,Ax_ss );
 //}
     
-    custom_compute_prefactor();
+    //custom_compute_prefactor();
     /*for (int i=0; i<28; i++){
     printf("D_ss before in the main  just out side prefactor %d is %f\n", i, D_ss[i]);
 }

@@ -86,7 +86,7 @@ pd_concat_h = '/ip_design/src/user_probData.h';
 mv_c = '/user_mv_mult.cpp';
 mv_h = '/user_mv_mult.h';
 mv_concat_c = '/ip_design/src/user_mv_mult.cpp';
-mv_concat_h = '/ip_design/src/user_mv_mult.cpp';
+mv_concat_h = '/ip_design/src/user_mv_mult.h';
 
 if ( strcmp(algo, 'admm') == 1)
     

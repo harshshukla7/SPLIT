@@ -44,7 +44,7 @@ end
 if ~isfield(settings, 'relaxation'), settings.relaxation = 1; end
 
 if(isfield(settings, 'Mat_Vec'))
-    Mat_Vec = settings.Mat_Vec; 
+    Mat_Vec = settings.Mat_Vec;
 end
 
 if(~isfield(settings, 'Mat_Vec'))
@@ -59,41 +59,77 @@ if(~isfield(settings, 'Lin_Solve'))
     Lin_Solve = 'auto';
 end
 
+
+FPGA_PL = 0;
+if(isfield(settings, 'FPGA_PL'))
+    
+    if (settings.FPGA_PL == 1)
+        FPGA_PL = 1;
+        
+        if(~isfield(settings, 'Mat_Vec'))
+            Mat_Vec = 'auto_FPGA';
+        end
+        
+        if(~isfield(settings, 'Lin_Solve'))
+            Lin_Solve = 'auto_FPGA';
+            
+        end
+    end
+    
+end
+
+FPGA_SoC = 0;
+if(isfield(settings, 'FPGA_SoC'))
+    
+    if (settings.FPGA_SoC == 1)
+        FPGA_SoC = 1;
+        
+        if(~isfield(settings, 'Mat_Vec'))
+            Mat_Vec = 'auto';
+        end
+        
+        if(~isfield(settings, 'Lin_Solve'))
+            Lin_Solve = 'auto_FPGA';
+        end
+        
+    end
+end
+
 dat  = prob.coderData;
 prox  = prob.prox;
 sd   = splitData;
 
 if(isfield(settings, 'primal_vars_x'))
-     %% ifdef warm start x
+    %% ifdef warm start x
     sd.hl('#define warm_start_x \n');
     a_name=sprintf('warm_x');
     sd.add_var(a_name,settings.primal_vars_x, 'type', 'real');
     
-     
+    
 end
 
 if(isfield(settings, 'primal_vars_y'))
-     %% ifdef warm start y
-     sd.hl('#define warm_start_y \n');
-     a_name=sprintf('warm_y');
-     if(strcmp(settings.precond,'yes'))
-    sd.add_var(a_name,settings.E*settings.primal_vars_y, 'type', 'real');
-     else
-         sd.add_var(a_name,settings.primal_vars_y, 'type', 'real');
-     end
+    %% ifdef warm start y
+    sd.hl('#define warm_start_y \n');
+    a_name=sprintf('warm_y');
+    if(strcmp(settings.precond,'yes'))
+        sd.add_var(a_name,settings.E*settings.primal_vars_y, 'type', 'real');
+    else
+        sd.add_var(a_name,settings.primal_vars_y, 'type', 'real');
+    end
 end
 
-% if(isfield(settings, 'primal_vars_lam'))
-%      %% ifdef warm start lam
-%      sd.hl('#define warm_start_lam \n');
-%      a_name=sprintf('warm_lambda');
-%     sd.add_var(a_name,settings.primal_vars_lam, 'type', 'real');
-% end
+if(isfield(settings, 'primal_vars_lam'))
+    %% ifdef warm start lam
+    sd.hl('#define warm_start_lam \n');
+    a_name=sprintf('warm_lambda');
+    sd.add_var(a_name,settings.primal_vars_lam, 'type', 'real');
+end
 
 if(isfield(settings, 'dual_vars_lam'))
-     %% ifdef warm start lam
-     sd.hl('#define warm_start_lambda \n');
-     a_name=sprintf('warm_dual_lambda');
+    %% ifdef warm start lam
+    sd.hl('#define warm_start_lambda \n');
+    a_name=sprintf('warm_dual_lambda');
     sd.add_var(a_name,settings.dual_vars_lam, 'type', 'real');
 end
 
@@ -172,7 +208,22 @@ end
 
 % Compute: l = pL*par + l_const, etc
 
-sd.add_function(coderFunc_parametric('custom_compute_parametric', dat));
+% Compute: l = pL*par + l_const, etc
+if FPGA_PL == 1
+    method_para = 'auto_FPGA';
+    sd.add_function(coderFunc_parametric('custom_compute_parametric', dat, 'method', method_para ));
+    
+elseif FPGA_SoC == 1
+    
+    method_para = 'auto';
+    sd.add_function(coderFunc_parametric('custom_compute_parametric', dat, 'method', method_para ));
+    
+else
+    
+    method_para = 'auto';
+    sd.add_function(coderFunc_parametric('custom_compute_parametric', dat, 'method', method_para ));
+    
+end
 
 %%  KKT solve step. Step 1 in Algorithm
 
@@ -332,7 +383,7 @@ if(strcmp(settings.adaptive,'no'))
     
     if(strcmp(settings.precond,'yes'))
         
-        %% printing 
+        %% printing
         disp('proxil is ')
         prox(1).l
         %%
@@ -342,9 +393,19 @@ if(strcmp(settings.adaptive,'no'))
         
         K = [dat.Q+rho*Ld'*Ld A'; A zeros(size(A,1))];
         spy(K)
-        mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve);
         
-
+        if(~isfield(settings, 'latency'))
+            latency = 8;
+        end
+        
+        if(~isfield(settings, 'paral'))
+            paral = floor(size(K,1)/3);
+        end
+        
+        nPrimal_solve = size(dat.Q,1);
+        mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , latency, 'paral', paral);
+        
+        
         if strcmp(mldivide.desc,'ldl_ss')
             sd.cl('double *Lx_ss;');
             sd.cl('int *Li_ss;');
@@ -360,6 +421,11 @@ if(strcmp(settings.adaptive,'no'))
             
         end
         
+        if (strcmp(mldivide.desc,'invert_FPGA_tree') || strcmp(mldivide.desc,'invert_FPGA_MAC'))
+            
+            sd.hl('#include "user_mv_mult.h" \n');
+        end
+
         
         sd.add_function(mldivide);
         
@@ -369,8 +435,19 @@ if(strcmp(settings.adaptive,'no'))
         sd.add_function(...
             coderFunc_times('custom_mult_Ltrans', sparse(dat.L'), 'Astr', 'Ltrans', 'method', Mat_Vec));
         K = [dat.Q+rho*L'*L A'; A zeros(size(A,1))];
-       
-        mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve);
+        
+        nPrimal_solve = size(dat.Q,1);
+        
+        if(~isfield(settings, 'latency'))
+            latency = 8;
+        end
+        
+        if(~isfield(settings, 'paral'))
+            paral = floor(size(K,1)/3);
+        end
+        
+        mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , latency, 'paral', paral);
+        
         if strcmp(mldivide.desc,'ldl_ss')
             sd.cl('double *Lx_ss;');
             sd.cl('int *Li_ss;');
@@ -384,6 +461,12 @@ if(strcmp(settings.adaptive,'no'))
             sd.hl('#define lapack_linsolve\n');
             
         end
+        
+        if (strcmp(mldivide.desc,'invert_FPGA_tree') || strcmp(mldivide.desc,'invert_FPGA_MAC'))
+            
+            sd.hl('#include "user_mv_mult.h" \n');
+        end
+
         
         sd.add_function(mldivide);
     end
