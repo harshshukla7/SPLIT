@@ -29,6 +29,7 @@ function count = struct_write(~, fid,format,data)
 % f             4             float
 % d             8             double
 % s             char[]        char[] returns character string
+% r                           real 
 %
 % Note that unlike struct_read, multipliers (e.g 8c to read 8 chars) are
 % not specified for struct_write. Struct_write instead takes advantage of
@@ -136,7 +137,10 @@ for i = 1:length(types)
         case 's'
             % char[]  ??? does this require adding 1 to mult for \null?
             cnt = fwrite(fid,data{i},'char');
-       
+        
+        case 'r'
+            % real, only for split implementation
+            cnt = fwrite(fid,data{i},'char');
     end
     count = count + cnt;
 end

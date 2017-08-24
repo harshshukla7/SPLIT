@@ -88,11 +88,15 @@ mat_h = which('matrix_ops_fpga.h');
 mat_concat_c = '/soc_prototype/src/user_matrix_ops.c';
 mat_concat_h = '/soc_prototype/src/user_matrix_ops.h';
 
+pd_c = '/user_probData.c';
+pd_h = '/user_probData.h';
 pd_concat_c = '/soc_prototype/src/user_prob_data.c';
 pd_concat_h = '/soc_prototype/src/user_prob_data.h';
 
-pd_concat_c_fpga = '/ip_design/src/user_mat_vec.cpp';
-pd_concat_h_fpga = '/ip_design/src/user_mat_vec.h';
+mv_c = '/user_mv_mult.cpp';
+mv_h = '/user_mv_mult.h';
+mv_concat_c_fpga = '/ip_design/src/user_mv_mult.cpp';
+mv_concat_h_fpga = '/ip_design/src/user_mv_mult.h';
 
 
 foo_concat_c = '/ip_design/src/foo_user.cpp';
@@ -207,17 +211,21 @@ fprintf(fileID, 'copyfile(''%s'', dest_path_h);\n \n \n', mat_h );
 
 
 %%% problem data copy paste
+fprintf(fileID, 'source_c = strcat(current_path, ''%s'');\n', pd_c);
+fprintf(fileID, 'source_h = strcat(current_path, ''%s'');\n', pd_h);
 fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', pd_concat_c);
 fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', pd_concat_h);
-fprintf(fileID, 'copyfile(current_path, dest_path_c);\n' );
-fprintf(fileID, 'copyfile(current_path, dest_path_h);\n \n \n' );
+fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
+fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
 
 
 %%% matrix vecctor on PL copy paste
-fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', pd_concat_c_fpga);
-fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', pd_concat_h_fpga);
-fprintf(fileID, 'copyfile(current_path, dest_path_c);\n' );
-fprintf(fileID, 'copyfile(current_path, dest_path_h);\n \n \n' );
+fprintf(fileID, 'source_c = strcat(current_path, ''%s'');\n', mv_c);
+fprintf(fileID, 'source_h = strcat(current_path, ''%s'');\n', mv_h);
+fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', mv_concat_c_fpga);
+fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', mv_concat_h_fpga);
+fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
+fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
 
 
 %%% foo user copy paste

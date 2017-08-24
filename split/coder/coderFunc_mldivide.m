@@ -25,7 +25,9 @@ classdef coderFunc_mldivide < coderFunc
             %  zero_tol   : Value below which a number is considered zero [1e-10]
             %               Used to sparsify the invert method
             %  nPrimal    : Number of primal variables
-            %
+            %  paral      : Level of parallelism (only for FPGAs, SoC)
+            %  lat        : adder_latency only for FPGA
+            
             
             p = inputParser;
             addRequired(p, 'func_name',  @ischar);
@@ -33,16 +35,26 @@ classdef coderFunc_mldivide < coderFunc
             
             addParameter(p, 'Astr',       uniqueVarName, @ischar);
             addParameter(p, 'method', 'auto', ...
-                @(x) any(validatestring(x,{'auto','invert','invert_FPGA','ldl','ldl_lp','ldl_ss'})));
+                @(x) any(validatestring(x,{'auto', 'auto_FPGA', 'invert','invert_FPGA', 'invert_FPGA_MAC', 'invert_FPGA_tree', 'ldl','ldl_lp','ldl_ss'})));
             addParameter(p, 'desc', '', @ischar);
             addParameter(p, 'zero_tol', 1e-10, @isnumeric);
             addParameter(p, 'nPrimal', @isnumeric);
+            
+            addParameter(p, 'lat', 8, @isnumeric);
+            
             % Parse and copy the results to the workspace
             parse(p, func_name, A, varargin{:});
             cellfun(@(q) evalin('caller',[q ' = p.Results.' q ';']), fieldnames(p.Results))
             
             % Write the function prototype
             [m,n] = size(A);
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % TODO: guess the best level of parallelism for FPGA and SoC 
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            addParameter(p, 'paral', m/2, @isnumeric);
+            
+            
             assert(m==n, 'func_mldivide currently only solves square matrices')
             f = f@coderFunc('void %s(REAL y[%i], REAL x[%i])', func_name, n, n);
             
@@ -66,7 +78,35 @@ classdef coderFunc_mldivide < coderFunc
             % Write the code to actually solve the problem
             switch method
                 %%
-                
+                case 'invert_FPGA_MAC'
+                    
+                    %first invert the matrix
+                    invA = inv(full(A));
+%                     invA = invA(1:nPrimal,:);
+                    
+                    %do not save the matrix as it will be saved in c file
+                    
+                    % to do 
+                    % 1. par_request parsing
+                    % 2. adder latency in settings
+                    
+                    set_fpga.adder_lat = lat;
+                    split_MV_MAC(H, paral, set_fpga)
+                    % call the mat-vec generator
+                    
+                    f.pl('mv_mult(y[%s], x[%s])', size(invA,1), size(invA,2) );
+                    
+                case 'invert_FPGA_tree'
+                    
+                    set_fpga.adder_lat = lat;
+                    split_MV_MAC(H, paral, set_fpga)
+                    split_MV_tree(H, settings)
+                    
+                    % call the mat-vec generator
+                    
+                    f.pl('mv_mult(y[%s], x[%s])', size(invA,1), size(invA,2) );
+                    
+                    
                 case 'invert_FPGA'
                     
                     invA = inv(full(A));
@@ -87,6 +127,11 @@ classdef coderFunc_mldivide < coderFunc
                      f.pl('  }');
                      f.pl('}');
                      
+                     fileID = fopen('user_mv_mult.cpp','w');
+                     fclose(fileID);
+                     
+                     fileID = fopen('user_mv_mult.h','w');
+                     fclose(fileID);
                     % f.pl('copy_vector(y,x,%i);', n); %%% copy the KKTRHP
                     
                     f.add_func(coderFunc_prefactor('custom_compute_prefactor',A,'none'));

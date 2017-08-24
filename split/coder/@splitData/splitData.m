@@ -13,8 +13,9 @@ classdef splitData < handle
         % List of data
         data = struct([]);
         
-%         realType = 'double'; % Change to double for double precision
-        realType = 'float'; % Change to double for double precision
+        %         realType = 'double'; % Change to double for double precision
+        %         realType = 'float'; % Change to double for double precision
+        realType = 'real'; % Change to double for double precision
         fname    = '';
         
         id = 1; % Used to create unique variable names
@@ -194,6 +195,8 @@ classdef splitData < handle
                                     dType = 1;
                                 case 'double'
                                     dType = 2;
+                                case 'real'
+                                    dType = 3;
                                 otherwise
                                     error('Unkown realType %s', dat.realType)
                             end
@@ -211,6 +214,8 @@ classdef splitData < handle
                             obj.struct_write(f, 'IIcf', d);
                         case 2
                             obj.struct_write(f, 'IIcd', d);
+                        case 3
+                            obj.struct_write(f, 'IIcr', d);
                         otherwise
                             error('Unknown data type')
                     end
@@ -249,8 +254,8 @@ classdef splitData < handle
             %  fprintf(f, '#include "user_ldl.h"\n\n');
             
             
-
-
+            
+            
             fprintf(f, '#define real %s\n', obj.realType);
             fprintf(f, '#define REAL %s\n', obj.realType);
             
@@ -321,9 +326,9 @@ classdef splitData < handle
             
             %%%% We do not need the following if we write data in c file.
             
-            for i = 1:length(obj.cfile)
-                fprintf(f, obj.cfile{i}{:});
-            end
+%             for i = 1:length(obj.cfile)
+%                 fprintf(f, obj.cfile{i}{:});
+%             end
             
             
             fprintf(f, '\n\n');
@@ -332,7 +337,8 @@ classdef splitData < handle
             FPGA_head = 1;
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%% Temporary solution for FPGA
+            %%%%%% Temporary solution for FPGA not to print load data - old
+            %%%%%% split systems
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             if (FPGA_head == 1)
                 for i = 1:length(obj.functions)-1

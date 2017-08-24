@@ -83,6 +83,11 @@ pd_concat_c = '/ip_design/src/user_probData.cpp';
 pd_concat_h = '/ip_design/src/user_probData.h';
 
 
+mv_c = '/user_mv_mult.cpp';
+mv_h = '/user_mv_mult.h';
+mv_concat_c = '/ip_design/src/user_mv_mult.cpp';
+mv_concat_h = '/ip_design/src/user_mv_mult.cpp';
+
 if ( strcmp(algo, 'admm') == 1)
     
     algo_c = which('admm_fpga.c');
@@ -195,6 +200,14 @@ fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
 %%% foo user copy paste
 fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', foo_concat_c);
 fprintf(fileID, 'copyfile(''%s'', dest_path_c);\n \n \n', foo_algo_c );
+
+%%% mat-vec copy paste
+fprintf(fileID, 'source_c = strcat(current_path, ''%s'');\n', mv_c);
+fprintf(fileID, 'source_h = strcat(current_path, ''%s'');\n', mv_h);
+fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', mv_concat_c);
+fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', mv_concat_h);
+fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
+fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
 
 
 %%%%% copy ends

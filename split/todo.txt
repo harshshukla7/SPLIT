@@ -1,3 +1,10 @@
+%% Harsh to do:
+
+1. coder_admm and coder_PDA: depending on the linear solve method, add f.desc in h line. e.g. add h file for FPGAs.
+2. linear system solve on FPGAs. must be rectangular not square to save the computations!
+
+
+
 %% Required for alpha / Giorgos release
 
 x add symmetric matrices
