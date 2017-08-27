@@ -284,9 +284,12 @@ classdef splitData < handle
             fprintf(f, '#ifdef lapack_linsolve \n');
             fprintf(f, 'extern __CLPK_integer ipiv[nn_lp];\n');
             fprintf(f, '#endif \n');
-            fprintf(f, 'extern double *Lx_ss;\n');
-            fprintf(f, 'extern int *Li_ss;\n');
-            
+
+            fprintf(f, '#ifdef suitesparse_linsolve \n');
+            fprintf(f, 'real *Lx_ss;\n');
+            fprintf(f, 'int *Li_ss;\n');
+            fprintf(f, '#endif \n');
+
             % Print all the function prototypes
             fprintf(f, '\n\n// Functions\n');
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

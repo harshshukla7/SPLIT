@@ -42,6 +42,7 @@ classdef coderFunc_mldivide < coderFunc
             
             addParameter(p, 'lat', 8, @isnumeric);
             addParameter(p, 'paral',  @isnumeric);
+            addParameter(p, 'hard', 2,  @isnumeric);
             
             % Parse and copy the results to the workspace
             parse(p, func_name, A, varargin{:});
@@ -92,6 +93,7 @@ classdef coderFunc_mldivide < coderFunc
                     % 2. adder latency in settings
                     
                     set_fpga.adder_lat = lat;
+                    set_fpga.hard = hard;
                     parall = paral;
                     split_MV_MAC(invA, parall, set_fpga);
                     % call the mat-vec generator
@@ -101,6 +103,7 @@ classdef coderFunc_mldivide < coderFunc
                 case 'invert_FPGA_tree'
                     
                     set_fpga.adder_lat = lat;
+                    set_fpga.hard = hard;
                     split_MV_MAC(H, paral, set_fpga)
                     split_MV_tree(H, settings)
                     

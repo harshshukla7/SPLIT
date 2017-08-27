@@ -25,6 +25,8 @@ static real workDual[nDual];      // Working memory of size dual
 static real kktRHS[nPrimal+nEqCon]; // RHS when solving the KKT system
 static real r[nDual];             // Primal error
 static real s[nPrimal];           // Dual error
+static real b_tmp[nEqCon];
+
 
 static double beta, beta_k, Ep, ibeta_k, beta_1, ibeta_1;
 
@@ -69,12 +71,17 @@ void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
     
     real rDual, rPrimal, rDual_prev, rPrimal_prev;
     int itr, i, itr_counter;
-    
+    itr_counter = 0;
+
     Ep = 1;
     beta_k = 1; //current_beta
     beta = 1; // previous_beta
     rDual = 10 ;
     rPrimal = 10 ;
+	
+	real rho = rho_init;
+	real rhoinv = rho_inv_init;   
+    // real rhoinv = 1/rho;
     
 //     loadData();
     // Compute: l = pL*par + l_const, etc
@@ -85,10 +92,18 @@ void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
 #ifdef precond
     custom_compute_parametric(ld, f, b, par);
 #endif
-    
+	
+////////////////////////////////////
+        ////////// delete the following print line
+        ////////////////////////////////////////
+ //        char *b_before_print="kktrhs_before_solve";
+ //        print_vector(b_before_print, b, nEqCon);
+        //////////////// delete part ends here
+     
     // Set kktRHS[nPrimal+1:end] = pB*par + b
     copy_vector(kktRHS+nPrimal, b, nEqCon);
-    
+    copy_vector(b_tmp, b, nEqCon);
+
     //printf("KKT RHS is %f, %f, %f, and\n b is %f, %f, %f and\n nprimal is %f", kktRHS[0], kktRHS[2], kktRHS[1], b[0], b[1], b[2], nPrimal );
     // Compute termination tolerances
     //const double DualTolSquared   = (opt->dualTol)*(opt->dualTol);
@@ -139,8 +154,8 @@ for (int i=0; i<38; i++){
         
         forall(nDual) lambda_hat[i] = lambda[i] + (ibeta_1 * (lambda[i]-prev_lambda[i]));
         
-        //  char *lambda_hat_init_after_print="first_lambda_hat";
-        //     print_vector(lambda_hat_init_after_print, lambda_hat, (nDual));
+     //    char *lambda_hat_init_after_print="first_lambda_hat";
+      //   print_vector(lambda_hat_init_after_print, lambda_hat, (nDual));
         
         
         /**********************************************************************
@@ -165,10 +180,22 @@ for (int i=0; i<38; i++){
         
         forall(nPrimal) kktRHS[i] -= f[i];
         // Set kktRHS[nPrimal+1:end] = pB*par + b
-        copy_vector(kktRHS+nPrimal, b, nEqCon);
-    
+        copy_vector(kktRHS+nPrimal, b_tmp, nEqCon);
+    	
+
+ ////////////////////////////////////
+        ////////// delete the following print line
+        ////////////////////////////////////////
+       //  char *b_after_print="kktrhs_before_solve";
+       //  print_vector(b_after_print, b, nEqCon);
+        //////////////// delete part ends here
         
-        
+         ////////////////////////////////////
+        ////////// delete the following print line
+        ////////////////////////////////////////
+      //   char *x_before_print="kktrhs_before_solve";
+      //   print_vector(x_before_print, kktRHS, (nPrimal + nEqCon));
+        //////////////// delete part ends here
         // Solve the KKT system
         
         
@@ -183,8 +210,8 @@ for (int i=0; i<38; i++){
         ////////////////////////////////////
         ////////// delete the following print line
         ////////////////////////////////////////
-         //char *x_after_print="x_after_solve";
-         //print_vector(x_after_print, x, (nPrimal));
+      //   char *x_after_print="x_after_solve";
+      //   print_vector(x_after_print, x, (nPrimal));
         //////////////// delete part ends here
         
         /**********************************************************************
@@ -242,8 +269,8 @@ for (int i=0; i<38; i++){
         ////////////////////////////////////
         ////////// delete the following print line
         ////////////////////////////////////////
-        //char *y_after_print="y_after_solve";
-        //print_vector(y_after_print, y, nDual);
+     //   char *y_after_print="y_after_solve";
+      //  print_vector(y_after_print, y, nDual);
         //////////////// delete part ends here
         
         /**********************************************************************
@@ -262,7 +289,7 @@ for (int i=0; i<38; i++){
         
         forall(nDual) lambda[i] = rho*(workDual[i] - y[i]);
         
-        //char *lambda_after_print="lambda_after_solve";
+       // char *lambda_after_print="lambda_after_solve";
         //print_vector(lambda_after_print, lambda, nDual);
         
         /**********************************************************************

@@ -19,7 +19,7 @@ classdef coderFunc_upper_triangular_solve < coderFunc
       %       q  = L' \ z;
       %       x(p,1)  = s .* q;
       
-      f = f@coderFunc('void %s(double _x[%i], double _z[%i])', funcname, size(U,2), size(U,1))
+      f = f@coderFunc('void %s(real _x[%i], real _z[%i])', funcname, size(U,2), size(U,1))
       
       % Store the inverse of the diagonal
       iUDiag = sprintf('%s_iDiag', Ustr);
@@ -48,7 +48,7 @@ classdef coderFunc_upper_triangular_solve < coderFunc
       end
       
       % Copy to output
-      f.pl('  memcpy(_x, _z, sizeof(double)*%i);', size(U,1));
+      f.pl('  memcpy(_x, _z, sizeof(real)*%i);', size(U,1));
     end
   end
 end

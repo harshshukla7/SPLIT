@@ -3,8 +3,7 @@ function [output] = PL_template_generator(nParam, nPrimal, nDual, settings)
 % nParam: number of parameters
 % nPrimal: number of primal
 % nDual: number of dual
-% 1. settings.hardware: 'PL' for pure FPGA and 'soc' for system on chip,
-% default: 'PL'
+% 1. settings.hardware: 'PL' for pure FPGA 
 % 2. settings.data_type: 'float' or 'fixed', default: 'float'
 % 3. settings.proj_name: any string, default name: 'split_project'
 % 4. settings.target_platform: check protoip which platforms are supported,
@@ -12,7 +11,11 @@ function [output] = PL_template_generator(nParam, nPrimal, nDual, settings)
 % 5. settings.target_frequency: string value of the target frequency (in MHz),
 % default:100MHz
 % 6. settings.number_test: character value, default:1
-% 7. settings.algorithm: character value, default: admm_fpga.c
+% 7. settings.x0
+% 8. settings.p0
+% 9. settings.d0
+% 10.settings.resi_tol  
+% 11.settings.algorithm: character value, default: admm_fpga.c
 %    other options: (i)admm (ii)fadmm, (iii) fama, (iv)
 %    pda.c (v) fpda
 
@@ -36,6 +39,7 @@ if (strcmp(settings.data_type, 'fixed') == 1)
     
     
 end
+
 
 %% project_name
 
@@ -64,7 +68,50 @@ default_num_test = '1';
 if ~isfield(settings, 'num_tests'), settings.num_tests = default_num_test; end
 
 
+%% check which inputs variables are passed else assign some values!
+
+if ~isfield(settings, 'x0'), settings.x0 = zeros(1,nParam); end
+if ~isfield(settings, 'p0'), settings.p0 = zeros(1,nPrimal); end
+if ~isfield(settings, 'd0'), settings.d0 = zeros(1,nDual); end
+if ~isfield(settings, 'resi_tol'), settings.resi_tol = [1e-2, 1e-2, 200, 1]; end
+
+x0 = settings.x0;
+p0 = settings.p0;
+d0 = settings.d0;
+tol_itr0 = settings.resi_tol;
+
+save('input_protosplit.mat', 'x0', 'p0', 'd0', 'tol_itr0');
+
 %% set up for copy paste file
+
+
+%%% matrix operations
+mat_c = which('matrix_ops_fpga.c');
+mat_h = which('matrix_ops_fpga.h');
+mat_concat_c = '/ip_design/src/user_matrix_ops.cpp';
+mat_concat_h = '/ip_design/src/user_matrix_ops.h';
+
+%%% problem data
+pd_c = '/user_probData.c';
+pd_h = '/user_probData.h';
+pd_concat_c = '/ip_design/src/user_probData.cpp';
+pd_concat_h = '/ip_design/src/user_probData.h';
+
+
+%%% matrix vector
+mv_c = '/user_mv_mult.cpp';
+mv_h = '/user_mv_mult.h';
+mv_concat_c = '/ip_design/src/user_mv_mult.cpp';
+mv_concat_h = '/ip_design/src/user_mv_mult.h';
+
+%%% test_HIL
+th_source = which('test_HIL_orig.m');
+th_concat = ('/ip_design/src/test_HIL.m');
+
+%%% copy paste input data file
+input_data_source_concat = '/input_protosplit.mat';
+input_data_dest_concat = '/ip_design/src/input_protosplit.mat';
+
 
 default_algorithm = 'admm';
 
@@ -72,21 +119,6 @@ if ~isfield(settings, 'algorithm'), settings.algorithm = default_algorithm; end
 
 algo = settings.algorithm;
 
-mat_c = which('matrix_ops_fpga.c');
-mat_h = which('matrix_ops_fpga.h');
-mat_concat_c = '/ip_design/src/user_matrix_ops.cpp';
-mat_concat_h = '/ip_design/src/user_matrix_ops.h';
-
-pd_c = '/user_probData.c';
-pd_h = '/user_probData.h';
-pd_concat_c = '/ip_design/src/user_probData.cpp';
-pd_concat_h = '/ip_design/src/user_probData.h';
-
-
-mv_c = '/user_mv_mult.cpp';
-mv_h = '/user_mv_mult.h';
-mv_concat_c = '/ip_design/src/user_mv_mult.cpp';
-mv_concat_h = '/ip_design/src/user_mv_mult.h';
 
 if ( strcmp(algo, 'admm') == 1)
     
@@ -197,9 +229,6 @@ fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', pd_concat_h);
 fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
 fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
 
-%%% foo user copy paste
-fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', foo_concat_c);
-fprintf(fileID, 'copyfile(''%s'', dest_path_c);\n \n \n', foo_algo_c );
 
 %%% mat-vec copy paste
 fprintf(fileID, 'source_c = strcat(current_path, ''%s'');\n', mv_c);
@@ -208,6 +237,24 @@ fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', mv_concat_c);
 fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', mv_concat_h);
 fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
 fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
+
+%%% foo user copy paste
+fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', foo_concat_c);
+fprintf(fileID, 'copyfile(''%s'', dest_path_c);\n \n \n', foo_algo_c );
+
+
+%%% copy paste test_hil
+fprintf(fileID, 'dest_m = strcat(current_path, ''%s''); \n', th_concat);
+fprintf(fileID, 'copyfile(''%s'', dest_m); \n \n', th_source);
+
+%%% copy input data file
+
+fprintf(fileID, 'source_dat = strcat(current_path, ''%s'');\n', input_data_source_concat);
+fprintf(fileID, 'desti_dat = strcat(current_path, ''%s'');\n', input_data_dest_concat);
+
+fprintf(fileID, 'copyfile(source_dat, desti_dat); \n \n' );
+
+% fprintf(fileID, 'save(''ip_design/src/input_protosplit.mat'', ''x0'', ''p0'', ''d0'', ''residual_itr''); \n \n');
 
 
 %%%%% copy ends
@@ -220,7 +267,11 @@ fprintf(fileID, 'ip_prototype_build(''project_name'',''%s'',''board_name'',''%s'
 
 fprintf(fileID, 'ip_prototype_load(''project_name'',''%s'',''board_name'',''%s'',''type_eth'',''udp'');\n \n', proj, board);
 fprintf(fileID, 'ip_prototype_test(''project_name'',''%s'',''board_name'',''%s'',''num_test'',%s);\n \n',proj, board, settings.num_tests);
+
+fprintf(fileID, 'load(''ip_design/src/output_protosplit.mat''); \n');
 fclose(fileID);
+
+while ~exist([pwd filesep 'SPLIT_template.m'], 'file') ; end
 output = 1;
 %% delete all the folllowings
 % if (isfield (settings))

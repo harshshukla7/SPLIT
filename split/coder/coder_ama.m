@@ -61,6 +61,7 @@ if(isfield(settings, 'FPGA_PL'))
     
     if (settings.FPGA_PL == 1)
         FPGA_PL = 1;
+        hard_mldivide = 2;
         
         if(~isfield(settings, 'Mat_Vec'))
             Mat_Vec = 'auto_FPGA';
@@ -79,7 +80,7 @@ if(isfield(settings, 'FPGA_SoC'))
     
     if (settings.FPGA_SoC == 1)
         FPGA_SoC = 1;
-        
+        hard_mldivide = 1;
         if(~isfield(settings, 'Mat_Vec'))
             Mat_Vec = 'auto';
         end
@@ -248,7 +249,7 @@ if(~isfield(settings, 'latency'))
 end
 
 if(~isfield(settings, 'paral'))
-    paral = floor(size(K,1)/3);
+    paral = 1;
 end
 
 LNZ=nnz(K)-nnz(triu(K));
@@ -270,7 +271,7 @@ sd.define('N_ss', N, 'int');
 
 %sd.add_function(coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve));
 
-mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method', Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , latency, 'paral', paral );
+mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method', Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , latency, 'paral', paral, 'hard', hard_mldivide );
 
 
 if strcmp(mldivide.desc,'ldl_ss')

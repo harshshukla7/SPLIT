@@ -6,9 +6,15 @@ function [] = split_MV_MAC(H, PAR_requested, settings)
 % parallelism must be known at code generation stage.
 
  if (~isfield (settings, 'adder_lat')); settings.adder_lat = 8; end
+ if (~isfield (settings, 'hard')); settings.hard = 2; end
  
  ADDER_LATENCY = settings.adder_lat; % max allowed adder latency (usually in the range 8 to 12 clock cycles)
+ 
+ if settings.hard == 2
  data_t = 'data_t_primal_out';
+ elseif settings.hard == 1
+     data_t = 'data_t_pl_vec_out_out';
+ end
  
  SIZE = size(H,1);
 %% parameters checking and adjustment

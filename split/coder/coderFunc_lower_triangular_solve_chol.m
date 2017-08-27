@@ -17,7 +17,7 @@ classdef coderFunc_lower_triangular_solve_chol < coderFunc
       % NOTE : b is changed on exit!
       %
 
-      f = f@coderFunc('void %s(double _x[%i], double _b[%i])', funcname, size(L,2), size(L,1));
+      f = f@coderFunc('void %s(real _x[%i], real _b[%i])', funcname, size(L,2), size(L,1));
       
       % Store the inverse of the diagonal
       iLDiag = sprintf('%s_iDiag', Lstr);

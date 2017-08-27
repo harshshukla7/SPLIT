@@ -6,7 +6,13 @@ function [] = split_MV_tree(H, settings)
 if (~isfield (settings, 'adder_lat')); settings.adder_lat = 8; end
  
  ADDER_LATENCY = settings.adder_lat; % max allowed adder latency (usually in the range 8 to 12 clock cycles)
+ 
+ if settings.hard == 2
  data_t = 'data_t_primal_out';
+ elseif setting.hard == 1
+     data_t = 'data_t_pl_vec_out_out';
+ end
+ 
  
  SIZE = size(H,1);
 
