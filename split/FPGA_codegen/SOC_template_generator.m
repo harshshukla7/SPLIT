@@ -107,8 +107,8 @@ mat_concat_h = '/soc_prototype/src/user_matrix_ops.h';
 %%% problem data
 pd_c = '/user_probData.c';
 pd_h = '/user_probData.h';
-pd_concat_c = '/soc_prototype/src/user_prob_data.c';
-pd_concat_h = '/soc_prototype/src/user_prob_data.h';
+pd_concat_c = '/soc_prototype/src/user_probData.c';
+pd_concat_h = '/soc_prototype/src/user_probData.h';
 
 %%% matrix vector
 mv_c = '/user_mv_mult.cpp';
