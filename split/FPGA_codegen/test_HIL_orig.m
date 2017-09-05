@@ -18,7 +18,7 @@ load_configuration_parameters(project_name)
 load('input_protosplit.mat');
 
 
-rng('shuffle');
+% rng('shuffle');
 
 for i=1:NUM_TEST
 	tmp_disp_str=strcat('Test number ',num2str(i));

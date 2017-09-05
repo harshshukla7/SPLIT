@@ -38,7 +38,7 @@ classdef coderFunc_times < coderFunc
             addParameter(p, 'bConst',  [],  @isnumeric);
             addParameter(p, 'bVar',    false,  @islogical);
             addParameter(p, 'method', 'auto', ...
-                @(x) any(validatestring(x,{'auto', 'auto_FPGA', 'for_loops','sparse','FPGA_matvec', 'FPGA_matvec_dense', 'FPGA_exhaustive_gen','blas','ss','exhaustive_gen'})));
+                @(x) any(validatestring(x,{'auto', 'auto_FPGA', 'FPGA_diag', 'for_loops','sparse','FPGA_matvec', 'FPGA_matvec_dense', 'FPGA_exhaustive_gen','blas','ss','exhaustive_gen'})));
             addParameter(p, 'desc', '', @ischar);
             addParameter(p, 'x_name', 'x', @ischar);
             addParameter(p, 'y_name', 'y', @ischar);
@@ -79,7 +79,7 @@ classdef coderFunc_times < coderFunc
             
             % Check if it is for FPGA
             FPGA_gen = 0;
-            if (strcmp(method, 'FPGA_matvec') || strcmp(method, 'FPGA_matvec_dense') || strcmp(method, 'auto_FPGA') || strcmp(method, 'FPGA_exhaustive_gen'))
+            if (strcmp(method, 'FPGA_diag') || strcmp(method, 'FPGA_matvec') || strcmp(method, 'FPGA_matvec_dense') || strcmp(method, 'auto_FPGA') || strcmp(method, 'FPGA_exhaustive_gen'))
                 
                 FPGA_gen = 1;
             end
@@ -87,7 +87,13 @@ classdef coderFunc_times < coderFunc
             
             if strcmpi(method, 'auto_FPGA')
                 % Try and guess the right method
-                if (m*n<40000)
+                
+                if isdiag(A) == 1
+                    
+                    method = 'FPGA_matvec';
+                    
+                    
+                elseif (m*n<40000)
                     if (nnz(A)/(m*n)<0.5)
                         method = 'FPGA_exhaustive_gen';
                         
@@ -304,6 +310,18 @@ classdef coderFunc_times < coderFunc
                         end
                         f.pl(';')
                     end
+                    
+                case 'FPGA_diag'
+                    
+                    % extract diagonal elements
+                    A_diag = diag(A);
+                    A_len 
+                    % store the data
+                    val_name = sprintf('%s_diag',Astr);
+                    f.add_var(val_name, A_diag, 'type', 'real');
+                    
+                    % multiply with loop unroll
+                    error('User ''FPGA_matvec'' as this feature is yet to be appeared. Not any performancce loss for a rectangular matrix' )
                     
                 case 'FPGA_matvec_dense'
                     

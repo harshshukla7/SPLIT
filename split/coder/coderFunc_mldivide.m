@@ -104,7 +104,7 @@ classdef coderFunc_mldivide < coderFunc
                     
                     set_fpga.adder_lat = lat;
                     set_fpga.hard = hard;
-                    split_MV_MAC(H, paral, set_fpga)
+%                     split_MV_MAC(H, paral, set_fpga)
                     split_MV_tree(H, settings)
                     
                     % call the mat-vec generator

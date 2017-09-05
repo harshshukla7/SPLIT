@@ -13,8 +13,10 @@ addpath('../../.metadata');
 mex FPGAclientMATLAB.c
 load_configuration_parameters(project_name)
 
+%%%%% load data from the workspace
+load('input_protosplit.mat');
 
-rng('shuffle');
+% rng('shuffle');
 
 for i=1:NUM_TEST
 	tmp_disp_str=strcat('Test number ',num2str(i));
@@ -22,8 +24,8 @@ for i=1:NUM_TEST
 
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	%% generate random stimulus vector soc_state0_in. (-5<=state0_in <=5)
-	soc_state0_in=rand(1,SOC_STATE0_IN_LENGTH)*10-5;
+	%% generate random stimulus vector soc_state0_in
+	soc_state0_in=x0;
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%save soc_state0_in_log
@@ -43,8 +45,8 @@ for i=1:NUM_TEST
 
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	%% generate random stimulus vector soc_primal0_in. (-5<=primal0_in <=5)
-	soc_primal0_in=rand(1,SOC_PRIMAL0_IN_LENGTH)*10-5;
+	%% generate random stimulus vector soc_primal0_in
+	soc_primal0_in=p0;
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%save soc_primal0_in_log
@@ -64,8 +66,8 @@ for i=1:NUM_TEST
 
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	%% generate random stimulus vector soc_dual0_in. (-5<=dual0_in <=5)
-	soc_dual0_in=rand(1,SOC_DUAL0_IN_LENGTH)*10-5;
+	%% generate random stimulus vector soc_dual0_in. 
+	soc_dual0_in=d0;
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%save soc_dual0_in_log
@@ -85,8 +87,8 @@ for i=1:NUM_TEST
 
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	%% generate random stimulus vector soc_tol_iterates_in. (-5<=tol_iterates_in <=5)
-	soc_tol_iterates_in=rand(1,SOC_TOL_ITERATES_IN_LENGTH)*10-5;
+	%% generate random stimulus vector soc_tol_iterates_in.
+	soc_tol_iterates_in=tol_itr0;
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%save soc_tol_iterates_in_log
@@ -190,7 +192,12 @@ for i=1:NUM_TEST
 	time_matlab=toc;
 	time_communication=time_matlab-time_IP;
 
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%% save the variable
+    save('output_protosplit.mat','fpga_soc_primal_out', 'fpga_soc_dual_out', 'fpga_soc_aux_primal_out', 'fpga_soc_iterates_out');
 
+    
 	%save fpga_soc_primal_out_log.dat
 	if (TYPE_TEST==0)
 		filename = strcat('../test/results/', project_name ,'/fpga_soc_primal_out_log.dat');

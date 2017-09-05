@@ -1,72 +1,59 @@
-function [] = split_MV_MAC(H, PAR_requested, settings)
+function [] = split_MV_MAC_old(H, PAR_requested, settings)
 
 % this script generates FPGA synthesisable C code for dense matrxi vector
 % multiplication y_out = H*x_in with variable degree parallelism
 % (i.e. number of multiply-accumulate units). The matrix and degree of 
 % parallelism must be known at code generation stage.
 
-%% parameters (defined by user)
-% SIZE = 130; % matrix size
-% H = rand(SIZE,SIZE); % matrix is specified by the user
-% PAR_requested  = 39; % requested degree of parallelism, must be in the range 1:SIZE. 
-% ADDER_LATENCY = 8; % max allowed adder latency (usually in the range 8 to 12 clock cycles)
-% data_t = 'float';
-
-
-if (~isfield (settings, 'adder_lat')); settings.adder_lat = 8; end
+ if (~isfield (settings, 'adder_lat')); settings.adder_lat = 8; end
  if (~isfield (settings, 'hard')); settings.hard = 2; end
  
  ADDER_LATENCY = settings.adder_lat; % max allowed adder latency (usually in the range 8 to 12 clock cycles)
  
  if settings.hard == 2
-     data_t = 'data_t_primal_out';
+ data_t = 'data_t_primal_out';
  elseif settings.hard == 1
      data_t = 'data_t_pl_vec_out_out';
  end
  
-  
- SIZE_row = size(H,1);
- SIZE_col = size(H,2);
- 
+ SIZE = size(H,1);
 %% parameters checking and adjustment
-PART_SIZE = ceil(SIZE_row/PAR_requested); % data partitions size
-PAR = floor(SIZE_row/PART_SIZE); % number of parallel MAC units (excluding the reaminder partition)
-REM_PART_SIZE = SIZE_row - PAR*PART_SIZE; % remainder partition size
-% For example if SIZE_row = 10, PAR_requested = 4 then:
+PART_SIZE = ceil(SIZE/PAR_requested); % data partitions size
+PAR = floor(SIZE/PART_SIZE); % number of parallel MAC units (excluding the reaminder partition)
+REM_PART_SIZE = SIZE - PAR*PART_SIZE; % remainder partition size
+% For example if SIZE = 10, PAR_requested = 4 then:
 % PART_SIZE = 3; PAR = 3, REM_PART_SIZE = 1;
 ACC_SIZE = ceil(ADDER_LATENCY/PART_SIZE); % using vectorized accumulator allows allows avoiding read-write dependencies
 
 %% generate code 
 fileID = fopen('user_mv_mult.h','w');
 fprintf(fileID, '#include "foo_data.h" \n');
-fprintf(fileID,'#define SIZE_row %d\n', SIZE_row);
-fprintf(fileID,'#define SIZE_col %d\n', SIZE_col);
+fprintf(fileID,'#define SIZE %d\n', SIZE);
 fprintf(fileID,'#define PAR %d\n', PAR);
 fprintf(fileID,'#define PART_SIZE %d\n', PART_SIZE);
 fprintf(fileID,'#define REM_PART_SIZE %d\n', REM_PART_SIZE);
 fprintf(fileID,'#define ACC_SIZE %d\n\n', ACC_SIZE);
 
-fprintf(fileID,strcat('void mv_mult(',data_t,' y_out[SIZE_row],',data_t,' x_in[SIZE_col]);\n'));
+fprintf(fileID,strcat('void mv_mult(',data_t,' y_out[SIZE],',data_t,' x_in[SIZE]);\n'));
 fclose(fileID);
 
 
 fileID = fopen('user_mv_mult.cpp','w');
 fprintf(fileID,'#include "user_mv_mult.h"\n');
 fprintf(fileID,'\n');
-fprintf(fileID,strcat('void mv_mult(',data_t,' y_out[SIZE_row],',data_t,' x_in[SIZE_col])\n'));
+fprintf(fileID,strcat('void mv_mult(',data_t,' y_out[SIZE],',data_t,' x_in[SIZE])\n'));
 fprintf(fileID,strcat('{\n'));
-fprintf(fileID,strcat('\tint i, i_acc, j, k;\n'));
-fprintf(fileID,strcat('\tlong int j_offset;\n\n'));
+fprintf(fileID,strcat('\tshort i, i_acc, j, j_offset, k;\n\n'));
 % print the matrix
 fprintf(fileID,'\t// matrix \n');
 tmp_mat = H(1:PAR*PART_SIZE,:);
-fprintf(fileID,strcat('\tstatic',32, data_t, ' H[PAR][PART_SIZE*SIZE_col] = {',sprintf('%2.16f,' , reshape(tmp_mat.',[],1)),'};\n'));
+fprintf(fileID,strcat('\t', data_t, ' H[PAR][PART_SIZE*SIZE] = {',sprintf('%2.16f,' , reshape(tmp_mat.',[],1)),'};\n'));
 fprintf(fileID,'\t#pragma HLS ARRAY_PARTITION variable=H complete dim=1\n');
 tmp_mat = H(PAR*PART_SIZE+1:end,:);
 if isempty(tmp_mat)
-    fprintf(fileID,strcat('\tstatic',32, data_t, ' H_rem[REM_PART_SIZE*SIZE_col] = {','};\n\n'));
+    fprintf(fileID,strcat('\t', data_t, ' H_rem[REM_PART_SIZE*SIZE] = {','};\n\n'));
 else
-    fprintf(fileID,strcat('\tstatic',32, data_t, ' H_rem[REM_PART_SIZE*SIZE_col] = {',sprintf('%2.16f,' , reshape(tmp_mat.',[],1)),'};\n\n'));
+    fprintf(fileID,strcat('\t', data_t, ' H_rem[REM_PART_SIZE*SIZE] = {',sprintf('%2.16f,' , reshape(tmp_mat.',[],1)),'};\n\n'));
 end
 
 
@@ -111,9 +98,9 @@ fprintf(fileID,'\t}\n\n');
 % fprintf(fileID,'\t}\n\n');
 
 fprintf(fileID,'\t// matrix vector multiplication\n');
-fprintf(fileID,'\tmv_1: for(i = 0, i_acc = 0; i < SIZE_col; i++, i_acc++)\n');
+fprintf(fileID,'\tmv_1: for(i = 0, i_acc = 0; i < SIZE; i++, i_acc++)\n');
 fprintf(fileID,'\t{\n');
-fprintf(fileID,'\t\tmv_2: for(j = 0, j_offset = 0; j < PART_SIZE; j++, j_offset+=SIZE_col)\n');
+fprintf(fileID,'\t\tmv_2: for(j = 0, j_offset = 0; j < PART_SIZE; j++, j_offset+=SIZE)\n');
 fprintf(fileID,'\t\t{\n');
 fprintf(fileID,'\t\t\t#pragma HLS DEPENDENCE variable=y_local inter distance=%d true\n',ADDER_LATENCY);
 fprintf(fileID,'\t\t\t#pragma HLS DEPENDENCE variable=y_local_rem inter distance=%d true\n',ADDER_LATENCY);
@@ -187,7 +174,8 @@ fprintf(fileID,strcat('}\n'));
 fclose(fileID);
 
 % %% copy code to protoip project
-% copyfile('mv_mult.cpp','ip_design/src/')
-% copyfile('mv_mult.h','ip_design/src/')
+%  copyfile('user_mv_mult.cpp','ip_design/src/user_mv_mult.cpp')
+%  copyfile('user_mv_mult.h','ip_design/src/user_mv_mult.h')
+
 
 end
