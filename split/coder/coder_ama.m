@@ -245,12 +245,14 @@ K = [Q A'; A zeros(size(A,1))]; %% KKT system matrix
 
 
 if(~isfield(settings, 'latency'))
-    latency = 8;
+    settings.latency = 8;
+
 end
 
 if(~isfield(settings, 'paral'))
-    paral = 1;
+    settings.paral = 1;
 end
+
 
 LNZ=nnz(K)-nnz(triu(K));
 ANZ=nnz(triu(K));
@@ -271,7 +273,7 @@ sd.define('N_ss', N, 'int');
 
 %sd.add_function(coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve));
 
-mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method', Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , latency, 'paral', paral, 'hard', hard_mldivide );
+mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method', Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , settings.latency, 'paral', settings.paral, 'hard', hard_mldivide );
 
 
 if strcmp(mldivide.desc,'ldl_ss')

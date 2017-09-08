@@ -84,7 +84,7 @@ classdef coderFunc_mldivide < coderFunc
                     
                     %first invert the matrix
                     invA = inv(full(A));
-%                     invA = invA(1:nPrimal,:);
+                    invA = invA(1:nPrimal,:);
                     
                     %do not save the matrix as it will be saved in c file
                     
@@ -97,7 +97,7 @@ classdef coderFunc_mldivide < coderFunc
                     parall = paral;
                     split_MV_MAC(invA, parall, set_fpga);
                     % call the mat-vec generator
-                    
+%                     f.pl('#pragma HLS INLINE' );
                     f.pl('mv_mult(y, x);', size(invA,1), size(invA,2) );
                     
                 case 'invert_FPGA_tree'
@@ -108,7 +108,7 @@ classdef coderFunc_mldivide < coderFunc
                     split_MV_tree(H, settings)
                     
                     % call the mat-vec generator
-                    
+%                     f.pl('#pragma HLS INLINE' );
                     f.pl('mv_mult(y, x);', size(invA,1), size(invA,2) );
                     
                     

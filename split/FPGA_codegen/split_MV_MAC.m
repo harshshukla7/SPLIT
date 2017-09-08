@@ -55,6 +55,7 @@ fprintf(fileID,'#include "user_mv_mult.h"\n');
 fprintf(fileID,'\n');
 fprintf(fileID,strcat('void mv_mult(',data_t,' y_out[SIZE_row],',data_t,' x_in[SIZE_col])\n'));
 fprintf(fileID,strcat('{\n'));
+% fprintf(fileID,strcat('#pragma HLS INLINE \n'));
 fprintf(fileID,strcat('\tint i, i_acc, j, k;\n'));
 fprintf(fileID,strcat('\tlong int j_offset;\n\n'));
 % print the matrix

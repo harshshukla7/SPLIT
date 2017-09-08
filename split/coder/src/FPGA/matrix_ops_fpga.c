@@ -37,7 +37,7 @@ void copy_vector( real *y, const real *x, int len){
 real sum_vector(const real *x, const int len)
 {
 	real z = 0.0;
-	for(int i=0; i<len; i++) z += x[i];
+loop_sum_vector_matops:	for(int i=0; i<len; i++) z += x[i];
    return z;
 }
 
@@ -45,7 +45,7 @@ real sum_vector(const real *x, const int len)
 real sum_squared(const real *x, const int len)
 {
   real z = 0.0;
-  forall(len) z += x[i]*x[i];
+loop_sum_squared_mops:  forall(len) z += x[i]*x[i];
   return z;
 }
 
@@ -53,7 +53,7 @@ real sum_squared(const real *x, const int len)
 real sum_absolute(const real *x, const int len)
 {
     real z = 0.0;
-    forall(len) z += fabs(x[i]);
+loop_sum_absolute_mops:    forall(len) z += fabs(x[i]);
     return z;
 }
 
@@ -62,21 +62,21 @@ real sum_absolute(const real *x, const int len)
 // Safe to scale in place (i.e., y=x)
 void scale_vector(real *y, const real alpha, const real *x, const int len)
 {
-	for(int i=0; i<len; i++) y[i] = alpha*x[i];
+loop_scale_vector_matops:	for(int i=0; i<len; i++) y[i] = alpha*x[i];
 }
 
 // returns <x,y>
 real dot_vector(const real *x, const real *y, const int len)
 {
 	real z = 0.0;
-	for(int i=0; i<len; i++) z += x[i]*y[i];
+loop_dot_vector_matops:	for(int i=0; i<len; i++) z += x[i]*y[i];
    return z;
 }
 
 // add constant to each element of vector
 
 void vector_constant_addition(real *y, const real *x, real addvalue, const int len){
-	for (int i=0; i<len; i++) y[i] = x[i] + addvalue;
+loop_vector_constant_addtion_matops:	for (int i=0; i<len; i++) y[i] = x[i] + addvalue;
 }
 // divide each  element of vector :
 
@@ -84,23 +84,23 @@ void vector_constant_addition(real *y, const real *x, real addvalue, const int l
 void divide_vector_elements(real *y, real *x, const int len )
 {
 
-	for(int i=0; i<len; i++) y[i] = 1/x[i];
+loop_divide_vector_matops:	for(int i=0; i<len; i++) y[i] = 1/x[i];
 }
 
 
 void scale_add_vector(real *z, real *y, real *x, real multiplayer, const int len )
 {
 
-	for(int i=0; i<len; i++) z[i] = y[i] + multiplayer*x[i];
+loop_scale_add_vector_matops:	for(int i=0; i<len; i++) z[i] = y[i] + multiplayer*x[i];
 }
 
 // returns y = M*x
 // Assumes that M is stored in row-major format
 void matvec_product(const real *M, const real *x, real *y, const int nrows, const int ncols)
 {
-  for(int r=0; r<nrows; r++) {
+loop_matvec_outer_matops:  for(int r=0; r<nrows; r++) {
     y[r] = 0.0;
-    for(int c=0; c<ncols; c++) {
+loop_matvec_inner_matops:    for(int c=0; c<ncols; c++) {
       y[r] += M[r*ncols + c]*x[c];
     }
   }
@@ -113,7 +113,7 @@ void matvec_product(const real *M, const real *x, real *y, const int nrows, cons
 void prox_norm_one(real *xprox, const real *x, const real t, const int len)
 {
    
-  forall(len) {
+loop_prox_norm_one_matops:  forall(len) {
     if      (x[i] >  t) xprox[i] = x[i] - t; 
     else if (x[i] < -t) xprox[i] = x[i] + t;
     else                xprox[i] = 0.0;
@@ -137,7 +137,7 @@ void prox_norm_two(real *xprox, const real *x, const real t, const int len)
 { 
   real tinv, alpha, nx;
   tinv = 1.0/t;
-  forall(len) xprox[i] = x[i]*tinv;
+loop_prox_norm_two_matops:  forall(len) xprox[i] = x[i]*tinv;
   nx = norm_two(xprox, len);
   
   alpha = 1.0 - 1.0/nx;
@@ -342,12 +342,12 @@ void proj_secondOrderCone_conj(real *xproj, const real *x, const int len)
 
 void proj_negative(real *xproj, const real *x, const int len)
 {
-  forall(len) xproj[i] = (x[i] > 0.0) ? 0.0 : x[i];
+loop_proj_negative_matops:  forall(len) xproj[i] = (x[i] > 0.0) ? 0.0 : x[i];
 }
 
 void proj_positive(real *xproj, const real *x, const int len)
 {
-  forall(len) xproj[i] = (x[i] < 0.0) ? 0.0 : x[i];
+loop_proj_positve_matops:  forall(len) xproj[i] = (x[i] < 0.0) ? 0.0 : x[i];
 }
 
 /***********************************************************
@@ -359,14 +359,14 @@ Vector norms
 real norm_one(const real *x, const int len)
 {
   real n = 0.0;
-  for(int i=0; i<len; i++) n = x[i] > 0 ? n+x[i] : n-x[i];
+loop_vec_norm_one_matops:  for(int i=0; i<len; i++) n = x[i] > 0 ? n+x[i] : n-x[i];
     return n;
 }
 
 real norm_two(const real *x, const int len)
 { real nsqrt;
   real n = 0.0;
-  for(int i=0; i<len; i++) n += x[i]*x[i];
+loop_vec_norm_two_matops:  for(int i=0; i<len; i++) n += x[i]*x[i];
   nsqrt = sqrt(n);
     return nsqrt;
 }
@@ -374,7 +374,7 @@ real norm_two(const real *x, const int len)
 real norm_inf(const real *x, const int len)
 {
   real n = 0;
-  for(int i=0; i<len; i++) {
+loop_vec_norm_inf_matops:  for(int i=0; i<len; i++) {
     if ( x[i] > n) n = x[i];
     if (-x[i] > n) n = -x[i];
   }
