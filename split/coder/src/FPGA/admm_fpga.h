@@ -22,10 +22,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "matrix_ops.h"
+#include "user_matrix_ops.h"
 
 #ifndef __probData_h__
-#include "probData.h"
+#include "user_probData.h"
 #endif
 
 #include "splitTimer.h" // needed only in case of timings

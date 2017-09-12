@@ -22,9 +22,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "matrix_ops.h"
+#include "user_matrix_ops.h"
 
-#include "probData.h" // Bring in custom data here
+#include "user_probData.h" // Bring in custom data here
 
 // Structure to return solution
 struct Sol { 

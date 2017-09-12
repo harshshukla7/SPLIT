@@ -22,12 +22,12 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "matrix_ops.h"
+#include "user_matrix_ops.h"
 #ifndef __probData_h__
-#include "probData.h"
+#include "user_probData.h"
 #endif
 
-#include "splitTimer.h"
+
 // Structure to return solution
 struct Sol { 
   double primal[nPrimal]; // Primal variable

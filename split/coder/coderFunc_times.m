@@ -38,10 +38,11 @@ classdef coderFunc_times < coderFunc
             addParameter(p, 'bConst',  [],  @isnumeric);
             addParameter(p, 'bVar',    false,  @islogical);
             addParameter(p, 'method', 'auto', ...
-                @(x) any(validatestring(x,{'auto', 'auto_FPGA', 'FPGA_diag', 'for_loops','sparse','FPGA_matvec', 'FPGA_matvec_dense', 'FPGA_exhaustive_gen','blas','ss','exhaustive_gen'})));
+                @(x) any(validatestring(x,{'auto', 'auto_FPGA', 'FPGA_diag', 'for_loops','sparse','FPGA_matvec', 'FPGA_matvec_sparse', 'FPGA_matvec_dense', 'FPGA_exhaustive_gen','blas','ss','exhaustive_gen'})));
             addParameter(p, 'desc', '', @ischar);
             addParameter(p, 'x_name', 'x', @ischar);
             addParameter(p, 'y_name', 'y', @ischar);
+            addParameter(p, 'loop_reset', 1,  @isnumeric);
             
             
             % Parse and copy the results to the workspace
@@ -79,7 +80,7 @@ classdef coderFunc_times < coderFunc
             
             % Check if it is for FPGA
             FPGA_gen = 0;
-            if (strcmp(method, 'FPGA_diag') || strcmp(method, 'FPGA_matvec') || strcmp(method, 'FPGA_matvec_dense') || strcmp(method, 'auto_FPGA') || strcmp(method, 'FPGA_exhaustive_gen'))
+            if (strcmp(method, 'FPGA_diag') ||  strcmp(method, 'FPGA_matvec_sparse') || strcmp(method, 'FPGA_matvec') || strcmp(method, 'FPGA_matvec_dense') || strcmp(method, 'auto_FPGA') || strcmp(method, 'FPGA_exhaustive_gen'))
                 
                 FPGA_gen = 1;
             end
@@ -112,42 +113,51 @@ classdef coderFunc_times < coderFunc
                 f.add_var(bStr, bConst);
             end
             
-            
-            if ~isempty(bConst) || bVar
-                
-                if (FPGA_gen == 1)
+            if loop_reset == 1
+                if ~isempty(bConst) || bVar
                     
-                    f.pl('int i;');
-                    val_name = sprintf('%s_val',Astr);
-                    f.pl('loop_%s_reset: for (i = 0; i < %d; i++)', val_name, size(A,1) );
-                    f.pl('{');
-                    f.pl('#pragma    HLS PIPELINE');
-                    f.pl('%s[i] = %s[i];',y_name, bStr);
-                    f.pl('}');
-                    
+                    if (FPGA_gen == 1)
+                        
+                        f.pl('int i;');
+                        val_name = sprintf('%s_val',Astr);
+                        f.pl('loop_%s_reset: for (i = 0; i < %d; i++)', val_name, size(A,1) );
+                        f.pl('{');
+                        f.pl('#pragma    HLS PIPELINE');
+                        f.pl('%s[i] = %s[i];',y_name, bStr);
+                        f.pl('}');
+                        
+                    elseif  (strcmp(method, 'FPGA_matvec_sparse') == 1)
+                        
+                        error('sparse matrix vector with y = Ax is supported. Do not use for y = Ax + b')
+                        
+                    else
+                        f.pl('memcpy(%s, %s, %i*sizeof(REAL));', y_name, bStr, size(A,1));
+                        
+                    end
                     
                 else
-                    f.pl('memcpy(%s, %s, %i*sizeof(REAL));', y_name, bStr, size(A,1));
                     
-                end
-                
-            else
-                
-                if(FPGA_gen == 1)
-                    
-                    f.pl('int i;');
-                    val_name = sprintf('%s_val',Astr);
-                    f.pl('loop_%s_reset: for (i = 0; i < %d; i++)', val_name, size(A,1) );
-                    f.pl('{');
-                    f.pl('#pragma    HLS PIPELINE');
-                    f.pl('%s[i] = 0.0;',y_name);
-                    f.pl('}');
-                    
-                else 
-                f.pl('memset(%s, 0, %i*sizeof(REAL));', y_name, size(A,1));
-            
+                    if (strcmp(method, 'FPGA_matvec_sparse') == 1)
+                        
+                    elseif((FPGA_gen == 1) && (strcmp(method, 'FPGA_matvec_sparse') == 0))
+                        
+                        f.pl('int i;');
+                        val_name = sprintf('%s_val',Astr);
+                        f.pl('loop_%s_reset: for (i = 0; i < %d; i++)', val_name, size(A,1) );
+                        f.pl('{');
+                        f.pl('#pragma    HLS PIPELINE');
+                        f.pl('%s[i] = 0.0;',y_name);
+                        f.pl('}');
+                        
+                    else
+                        f.pl('memset(%s, 0, %i*sizeof(REAL));', y_name, size(A,1));
+                        
+                    end
                 end
             end
+            
+            
+            f.desc = method;
             
             % Write the code to actually solve the problem
             switch method
@@ -235,11 +245,11 @@ classdef coderFunc_times < coderFunc
                     f.add_var(val_name, val_L_ret, 'type', 'real');
                     
                     f.pl('int row_ind, col_ind;');
-%                     f.pl('loop_%s_reset: for (i = 0; i < %d; i++)', val_name, out_size);
-%                     f.pl('{');
-%                     f.pl('#pragma    HLS PIPELINE');
-%                     f.pl('%s[i] = 0.0;',y_name);
-%                     f.pl('}');
+                    %                     f.pl('loop_%s_reset: for (i = 0; i < %d; i++)', val_name, out_size);
+                    %                     f.pl('{');
+                    %                     f.pl('#pragma    HLS PIPELINE');
+                    %                     f.pl('%s[i] = 0.0;',y_name);
+                    %                     f.pl('}');
                     
                     f.pl('loop_%s: for (i = 0; i < %d; i++)', val_name, len_val);
                     f.pl('{');
@@ -282,7 +292,7 @@ classdef coderFunc_times < coderFunc
                     
                 case 'FPGA_exhaustive_gen'
                     
-                     % Write out every non-zero multiplication
+                    % Write out every non-zero multiplication
                     A = full(A);
                     
                     for r=1:size(A,1)
@@ -311,11 +321,16 @@ classdef coderFunc_times < coderFunc
                         f.pl(';')
                     end
                     
+                case 'FPGA_matvec_sparse'
+                    
+                    split_MV_sparse(A, func_name, loop_reset);
+                    f.pl('%s_sparse_mv_mult(%s, %s);', func_name, y_name, x_name);
+                    
                 case 'FPGA_diag'
                     
                     % extract diagonal elements
                     A_diag = diag(A);
-                    A_len 
+                    A_len
                     % store the data
                     val_name = sprintf('%s_diag',Astr);
                     f.add_var(val_name, A_diag, 'type', 'real');

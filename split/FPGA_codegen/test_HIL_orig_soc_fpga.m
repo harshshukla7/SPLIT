@@ -14,7 +14,7 @@ mex FPGAclientMATLAB.c
 load_configuration_parameters(project_name)
 
 
-rng('shuffle');
+% rng('shuffle');
 
 for i=1:NUM_TEST
 	tmp_disp_str=strcat('Test number ',num2str(i));
@@ -23,7 +23,7 @@ for i=1:NUM_TEST
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%% generate random stimulus vector pl_vec_in_in. (-5<=pl_vec_in_in <=5)
-	pl_vec_in_in=rand(1,PL_VEC_IN_IN_LENGTH)*10-5;
+% 	pl_vec_in_in=rand(1,PL_VEC_IN_IN_LENGTH)*10-5;
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%save pl_vec_in_in_log
@@ -44,7 +44,7 @@ for i=1:NUM_TEST
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%% generate random stimulus vector pl_mat_in_in. (-5<=pl_mat_in_in <=5)
-	pl_mat_in_in=rand(1,PL_MAT_IN_IN_LENGTH)*10-5;
+% 	pl_mat_in_in=rand(1,PL_MAT_IN_IN_LENGTH)*10-5;
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%save pl_mat_in_in_log
@@ -146,7 +146,7 @@ for i=1:NUM_TEST
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%% compute with Matlab and save in a file simulation results
-	[matlab_pl_vec_out_out] = foo_user(project_name,pl_vec_in_in, pl_mat_in_in);
+% 	[matlab_pl_vec_out_out] = foo_user(project_name,pl_vec_in_in, pl_mat_in_in);
 
 
 	%save matlab_pl_vec_out_out_log

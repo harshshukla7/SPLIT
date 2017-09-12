@@ -35,7 +35,7 @@ classdef coderFunc_mldivide < coderFunc
             
             addParameter(p, 'Astr',       uniqueVarName, @ischar);
             addParameter(p, 'method', 'auto', ...
-                @(x) any(validatestring(x,{'auto', 'auto_FPGA', 'invert','invert_FPGA', 'invert_FPGA_MAC', 'invert_FPGA_tree', 'ldl','ldl_lp','ldl_ss'})));
+                @(x) any(validatestring(x,{'auto', 'invert_SoC_MAC', 'invert_SoC_tree', 'auto_SoC' 'auto_FPGA', 'invert','invert_FPGA', 'invert_FPGA_MAC', 'invert_FPGA_tree', 'ldl','ldl_lp','ldl_ss'})));
             addParameter(p, 'desc', '', @ischar);
             addParameter(p, 'zero_tol', 1e-10, @isnumeric);
             addParameter(p, 'nPrimal', @isnumeric);
@@ -75,11 +75,50 @@ classdef coderFunc_mldivide < coderFunc
                 method = 'ldl_ss';
              end
             
+             if strcmpi(method, 'auto_SoC')
+                % Try and guess the right method
+                
+                method = 'invert_SoC_MAC';
+            end
+            
+             
             f.desc = method;
             
             % Write the code to actually solve the problem
             switch method
                 %%
+                
+                case 'invert_SoC_MAC'
+                    
+                    %first invert the matrix
+                    invA = inv(full(A));
+                    invA = invA(1:nPrimal,:);
+                    
+                    %do not save the matrix as it will be saved in c file
+                    
+                    % to do 
+                    % 1. par_request parsing
+                    % 2. adder latency in settings
+                    
+                    set_fpga.adder_lat = lat;
+                    set_fpga.hard = hard;
+                    parall = paral;
+                    split_MV_MAC(invA, parall, set_fpga);
+                    % call the mat-vec generator
+%                     f.pl('#pragma HLS INLINE' );
+%                     f.pl('mv_mult(y, x);', size(invA,1), size(invA,2) );
+                    
+                case 'invert_SoC_tree'
+                    
+                    set_fpga.adder_lat = lat;
+                    set_fpga.hard = hard;
+%                     split_MV_MAC(H, paral, set_fpga)
+                    split_MV_tree(H, settings)
+                    
+                    % call the mat-vec generator
+%                     f.pl('#pragma HLS INLINE' );
+%                     f.pl('mv_mult(y, x);', size(invA,1), size(invA,2) );
+                    
                 case 'invert_FPGA_MAC'
                     
                     %first invert the matrix

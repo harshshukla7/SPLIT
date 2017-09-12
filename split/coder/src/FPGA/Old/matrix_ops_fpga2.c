@@ -342,25 +342,12 @@ void proj_secondOrderCone_conj(real *xproj, const real *x, const int len)
 
 void proj_negative(real *xproj, const real *x, const int len)
 {
-loop_proj_negative_matops:   for(i=0; i<len; i++){
-#pragma HLS PIPELINE
-	xproj[i] = (x[i] > 0.0) ? 0.0 : x[i];
-}
-
-//forall(len) xproj[i] = (x[i] > 0.0) ? 0.0 : x[i];
+loop_proj_negative_matops:  forall(len) xproj[i] = (x[i] > 0.0) ? 0.0 : x[i];
 }
 
 void proj_positive(real *xproj, const real *x, const int len)
 {
-#pragma HLS INLINE
-
-loop_proj_positve_matops: for(i=0; i<168; i++){
-#pragma HLS PIPELINE
-	xproj[i] = (x[i] < 0.0) ? 0.0 : x[i];
-}
-
-
-//forall(len) xproj[i] = (x[i] < 0.0) ? 0.0 : x[i];
+loop_proj_positve_matops:  forall(len) xproj[i] = (x[i] < 0.0) ? 0.0 : x[i];
 }
 
 /***********************************************************

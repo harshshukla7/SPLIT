@@ -120,6 +120,12 @@ mv_concat_h_fpga = '/ip_design/src/user_mv_mult.h';
 foo_concat_c = '/ip_design/src/foo_user.cpp';
 foo_algo_c = which('foo_user_orig_soc.cpp');
 
+
+%%% foo user for soc prototype
+foo_soc_concat_c = '/soc_prototype/src/user_foo_data.h';
+foo_soc_algo_c = which('user_foo_data_soc_protoype.h');
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% add here
 %%% test_HIL for soc
 th_source_soc = which('test_HIL_orig_soc.m');
@@ -274,9 +280,13 @@ fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
 fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
 
 
-%%% foo user copy paste
+%%% foo user for ip design copy paste
 fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', foo_concat_c);
 fprintf(fileID, 'copyfile(''%s'', dest_path_c);\n \n \n', foo_algo_c );
+
+%%% foo user for ip prototype copy paste
+fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', foo_soc_concat_c);
+fprintf(fileID, 'copyfile(''%s'', dest_path_c);\n \n \n', foo_soc_algo_c );
 
 
 %%% soc user copy paste

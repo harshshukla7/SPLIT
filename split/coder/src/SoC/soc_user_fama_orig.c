@@ -20,9 +20,9 @@ void soc_user(float soc_state0_in[SOC_STATE0_IN_VECTOR_LENGTH],float soc_primal0
 	    int number_of_solves = 1;
 	    Opt opt = {soc_tol_iterates_in[0], soc_tol_iterates_in[1], soc_tol_iterates_in[2], soc_tol_iterates_in[3]};
 
-	copy_vector(soc_state0_in, par_ex, SOC_STATE0_IN_VECTOR_LENGTH );
+	//copy_vector(par_ex, soc_state0_in,  SOC_STATE0_IN_VECTOR_LENGTH );
 	initialize();
-	solve(&sol, par_ex, &opt);
+	solve(&sol, soc_state0_in, &opt);
 	/*for( i=0;i<SOC_SOC_X_OUT_OUT_VECTOR_LENGTH;i++){
 
 	//balance = soc_x_hat_in[i]*soc_x_hat_in[i];

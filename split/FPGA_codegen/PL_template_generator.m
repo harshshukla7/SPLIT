@@ -112,6 +112,23 @@ th_concat = ('/ip_design/src/test_HIL.m');
 input_data_source_concat = '/input_protosplit.mat';
 input_data_dest_concat = '/ip_design/src/input_protosplit.mat';
 
+%%% optional sparse mat-vec product
+
+source_L_c = '/user_custom_mult_L_sparse_mv_mult.cpp';
+source_L_h = '/user_custom_mult_L_sparse_mv_mult.h';
+
+
+sparse_L_concat_c = '/ip_design/src/user_custom_mult_L_sparse_mv_mult.cpp';
+sparse_L_concat_h = '/ip_design/src/user_custom_mult_L_sparse_mv_mult.h';
+
+source_Lt_c = '/user_custom_mult_Ltrans_sparse_mv_mult.cpp';
+source_Lt_h = '/user_custom_mult_Ltrans_sparse_mv_mult.h';
+
+
+sparse_Lt_concat_c = '/ip_design/src/user_custom_mult_Ltrans_sparse_mv_mult.cpp';
+sparse_Lt_concat_h = '/ip_design/src/user_custom_mult_Ltrans_sparse_mv_mult.h';
+
+
 
 default_algorithm = 'admm';
 
@@ -256,6 +273,35 @@ fprintf(fileID, 'copyfile(source_dat, desti_dat); \n \n' );
 
 % fprintf(fileID, 'save(''ip_design/src/input_protosplit.mat'', ''x0'', ''p0'', ''d0'', ''residual_itr''); \n \n');
 
+cd_tp = cd;
+
+if ((exist(fullfile(cd_tp, 'user_custom_mult_L_sparse_mv_mult.cpp'), 'file')) == 2)
+    
+    %%% problem data copy paste
+fprintf(fileID, 'source_c = strcat(current_path, ''%s'');\n', source_L_c);
+fprintf(fileID, 'source_h = strcat(current_path, ''%s'');\n', source_L_h);
+fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', sparse_L_concat_c);
+fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', sparse_L_concat_h);
+fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
+fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
+
+   
+    
+end
+
+
+if ((exist(fullfile(cd_tp, 'user_custom_mult_Ltrans_sparse_mv_mult.cpp'), 'file')) == 2)
+   
+    %%% problem data copy paste
+fprintf(fileID, 'source_c = strcat(current_path, ''%s'');\n', source_Lt_c);
+fprintf(fileID, 'source_h = strcat(current_path, ''%s'');\n', source_Lt_h);
+fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', sparse_Lt_concat_c);
+fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', sparse_Lt_concat_h);
+fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
+fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
+
+    
+end
 
 %%%%% copy ends
 
