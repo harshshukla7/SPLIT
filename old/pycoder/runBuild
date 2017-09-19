@@ -1,5 +1,0 @@
-#/bin/sh
-
-cog.py -d -U -o admm.c template_admm.c
-cog.py -d -U -o admm.h template_admm.h
-
