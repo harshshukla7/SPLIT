@@ -7,6 +7,15 @@
  *
  * f = pF*par + f_const
  * l = pL*par + l_const
+ *
+ * Solve parametric convex optimization problem using AMA
+ *
+ * min 0.5 x'*Q*x + f'*x + sum w_i prox_i(y_i)
+ * s.t. Ax = b
+ *      y  = Lx 
+ *
+ * f = pF*par + f_const
+ * l = pL*par + l_const
  * b = pB*par + b_const
  *
  * Sizes:
@@ -30,6 +39,7 @@
 #include "user_foo_data.h"
 #include "foo_function_wrapped.h"
 
+// Structure to return solution
 struct Sol { 
   data_t_primal_out primal[nPrimal]; // Primal variable
   data_t_primal_out dual[nDual];     // Dual variable
@@ -48,6 +58,7 @@ struct Opt {
   int ITR_PER_CONV_TEST;   // Number of iterations between convergence tests
 }; 
 typedef struct Opt Opt;
+
 // const Opt Opt_Default = {1e-4, 1e-4, 1000, 10};
 
 // Initialize values of all variables to zero on first call

@@ -28,14 +28,14 @@ static real s[nPrimal];           // Dual error
 static real b_tmp[nEqCon];
 
 
-static real beta, beta_k, Ep, ibeta_k, beta_1, ibeta_1;
+static double beta, beta_k, Ep, ibeta_k, beta_1, ibeta_1;
 
 #ifdef precond
 static real workDual_scale[nDual]; // Tempoary workdual scaled with E^-1
 #endif
 
 #ifdef adaptive_restart
-real ad_rest ;
+double ad_rest ;
 #endif
 
 // Initialize values of all variables
@@ -64,23 +64,23 @@ void initialize(){
 
 // Function declaration
 //void solve(Sol *sol, real par[nParam], const Opt *opt, data_t_tol_iterates_in tol_iterates_in_int[TOL_ITERATES_IN_LENGTH], data_t_iterates_out iterates_out_int[ITERATES_OUT_LENGTH] )
-void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
+void solve(Sol *sol, data_t_primal_out par[nParam], const Opt *opt )
 {
-
+    
     //iterates_out_int[0] = tol_iterates_in_int[0];
     
     real rDual, rPrimal, rDual_prev, rPrimal_prev;
     int itr, i, itr_counter, ii;
     itr_counter = 0;
-
+    
     Ep = 1;
     beta_k = 1; //current_beta
     beta = 1; // previous_beta
     rDual = 10 ;
     rPrimal = 10 ;
-	
-	real rho = rho_init;
-	real rhoinv = rho_inv_init;   
+    
+    real rho = rho_init;
+    real rhoinv = rho_inv_init;
     // real rhoinv = 1/rho;
     
 //     loadData();
@@ -92,18 +92,18 @@ void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
 #ifdef precond
     custom_compute_parametric(ld, f, b, par);
 #endif
-	
+    
 ////////////////////////////////////
-        ////////// delete the following print line
-        ////////////////////////////////////////
- //        char *b_before_print="kktrhs_before_solve";
- //        print_vector(b_before_print, b, nEqCon);
-        //////////////// delete part ends here
-     
+    ////////// delete the following print line
+    ////////////////////////////////////////
+    //        char *b_before_print="kktrhs_before_solve";
+    //        print_vector(b_before_print, b, nEqCon);
+    //////////////// delete part ends here
+    
     // Set kktRHS[nPrimal+1:end] = pB*par + b
     copy_vector(kktRHS+nPrimal, b, nEqCon);
     copy_vector(b_tmp, b, nEqCon);
-
+    
     //printf("KKT RHS is %f, %f, %f, and\n b is %f, %f, %f and\n nprimal is %f", kktRHS[0], kktRHS[2], kktRHS[1], b[0], b[1], b[2], nPrimal );
     // Compute termination tolerances
     //const double DualTolSquared   = (opt->dualTol)*(opt->dualTol);
@@ -112,43 +112,40 @@ void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
     const real DualTol   = (opt->dualTol);
     const real PrimalTol = (opt->primalTol);
     
-    ////////////////////////////////////////
-    //////////////// Warm start
-    ////////////////////////////////////////
-    
-    copy_vector(x, sol->primal, nPrimal+nEqCon);
-    copy_vector(lambda, sol->dual, nDual);
-    
-    
-    
     //for (int i=0; i<28; i++){
     //  printf("Ap_ss matrix entry %d is %f \n",i ,Ax_ss );
 //}
+#ifdef suitesparse_linsolve
+    custom_compute_prefactor();
+#endif
     
-    //custom_compute_prefactor();
+#ifdef lapack_linsolve
+    custom_compute_prefactor();
+#endif
+    //
     /*for (int i=0; i<28; i++){
-    printf("D_ss before in the main  just out side prefactor %d is %f\n", i, D_ss[i]);
-}
+     * printf("D_ss before in the main  just out side prefactor %d is %f\n", i, D_ss[i]);
+     * }
      *
      *check here
      *
      *
-for(int  i= 0; i < N_ss; i++){
-printf("Lnz[%d] is %d \n", i, Lnz[i]);
-}
-   
-for (int i=0; i<38; i++){
-    printf("Lx_ss before in the main  just out side prefactor %d is %f\n", i, Lx_ss[i]);
-} */
+     * for(int  i= 0; i < N_ss; i++){
+     * printf("Lnz[%d] is %d \n", i, Lnz[i]);
+     * }
+     *
+     * for (int i=0; i<38; i++){
+     * printf("Lx_ss before in the main  just out side prefactor %d is %f\n", i, Lx_ss[i]);
+     * } */
     //for (int i=0; i<28; i++){
     //  printf("Diagonal matrix entry %d is %f \n",i ,D_ss );
 //}
     
-    //long double start_kkt, end_kkt, sum_time, start_total, end_total; 
-    //sum_time = 0;    
+    long double start_kkt, end_kkt, sum_time, start_total, end_total;
+    sum_time = 0;
     //opt->MAXITR
 //     start_total = split_tic();
-   FAMA_main_iteration: for(itr=0; itr < opt->MAXITR ; itr++)
+    FAMA_main_iteration: for(itr=0; itr < opt->MAXITR ; itr++)
     {
         // Step 1: Nesterov relaxation
 //
@@ -161,14 +158,14 @@ for (int i=0; i<38; i++){
         
         
         
-      loop_lambda_hat_update_fama:  for(i = 0; i < nDual; i++) { 
-	#pragma HLS PIPELINE 
-	lambda_hat[i] = lambda[i] + (ibeta_1 * (lambda[i]-prev_lambda[i]));
-	workDual[i] = (-lambda_hat[i]);
-	}
+        loop_lambda_hat_update_fama:  for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+            lambda_hat[i] = lambda[i] + (ibeta_1 * (lambda[i]-prev_lambda[i]));
+            workDual[i] = (-lambda_hat[i]);
+        }
         
-     //    char *lambda_hat_init_after_print="first_lambda_hat";
-      //   print_vector(lambda_hat_init_after_print, lambda_hat, (nDual));
+        //    char *lambda_hat_init_after_print="first_lambda_hat";
+        //   print_vector(lambda_hat_init_after_print, lambda_hat, (nDual));
         
         
         /**********************************************************************
@@ -178,7 +175,7 @@ for (int i=0; i<38; i++){
          **********************************************************************/
         
         // Compute workDual = rho*(-l + y - lambda)
-   //    loop_workdual_update_fama: for(i = 0; i < nDual; i++) {
+        //    loop_workdual_update_fama: for(i = 0; i < nDual; i++) {
 //	#pragma HLS PIPELINE
 //	workDual[i] = (-lambda_hat[i]);
 //	}
@@ -193,43 +190,44 @@ for (int i=0; i<38; i++){
         custom_mult_Ltrans(kktRHS, workDual);
 #endif
         
-    KKT_RHS_WORK_DUAL_RESET:{
+        KKT_RHS_WORK_DUAL_RESET:{
 #pragma HLS LOOP_MERGE
-		loop_KKT_RHS_update_fama: for(i = 0; i < nPrimal; i++)
-		{
-			#pragma HLS PIPELINE
-			kktRHS[i] -= f[i];
-		}
-
-		loop_WORK_DUAL_RESET_fama: for(i = 0; i < nDual; i++)
-		{
-			#pragma HLS PIPELINE
-			workDual[i] = 0;
-		}
-    }
-
-
-
+            loop_KKT_RHS_update_fama: for(i = 0; i < nPrimal; i++)
+            {
+#pragma HLS PIPELINE
+                kktRHS[i] -= f[i];
+            }
+            
+            loop_WORK_DUAL_RESET_fama: for(i = 0; i < nDual; i++)
+            {
+#pragma HLS PIPELINE
+                workDual[i] = 0;
+            }
+        }
+        
+        copy_vector(kktRHS+nPrimal, b_tmp, nEqCon);
+        
+        
         // Set kktRHS[nPrimal+1:end] = pB*par + b
-       // copy_vector(kktRHS+nPrimal, b_tmp, nEqCon);
-    	
+        // copy_vector(kktRHS+nPrimal, b_tmp, nEqCon);
+        
 //loop_KKT_RHS_eq_fama: for(i=0; i<nEqCon; i++){
 //#pragma HLS PIPELINE
 //	kktRHS[i+nPrimal] = b_tmp[i];
 //}
-
- ////////////////////////////////////
+        
+        ////////////////////////////////////
         ////////// delete the following print line
         ////////////////////////////////////////
-       //  char *b_after_print="kktrhs_before_solve";
-       //  print_vector(b_after_print, b, nEqCon);
+        //  char *b_after_print="kktrhs_before_solve";
+        //  print_vector(b_after_print, b, nEqCon);
         //////////////// delete part ends here
         
-         ////////////////////////////////////
+        ////////////////////////////////////
         ////////// delete the following print line
         ////////////////////////////////////////
-      //   char *x_before_print="kktrhs_before_solve";
-      //   print_vector(x_before_print, kktRHS, (nPrimal + nEqCon));
+        //   char *x_before_print="kktrhs_before_solve";
+        //   print_vector(x_before_print, kktRHS, (nPrimal + nEqCon));
         //////////////// delete part ends here
         // Solve the KKT system
         
@@ -238,15 +236,15 @@ for (int i=0; i<38; i++){
         //printf("KKT Solve");
 //         start_kkt = split_tic();
         custom_solve_kkt(x, kktRHS);
-//         end_kkt = split_toc(start_kkt); 
+//         end_kkt = split_toc(start_kkt);
         //printf("end_KKt is %Lf\n",end_kkt);
 //         sum_time = end_kkt + sum_time;
         
         ////////////////////////////////////
         ////////// delete the following print line
         ////////////////////////////////////////
-      //   char *x_after_print="x_after_solve";
-      //   print_vector(x_after_print, x, (nPrimal));
+        //   char *x_after_print="x_after_solve";
+        //   print_vector(x_after_print, x, (nPrimal));
         //////////////// delete part ends here
         
         /**********************************************************************
@@ -267,65 +265,65 @@ for (int i=0; i<38; i++){
 // workDual = L*x
         custom_mult_Ld(workDual, x);
         
- loop_ri_update_fama_precond:       for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	 prev_y[i] = y[i];
-	r[i] = workDual[i] + ld[i];
-	}
+        loop_ri_update_fama_precond:       for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+            prev_y[i] = y[i];
+            r[i] = workDual[i] + ld[i];
+        }
         // workDual = lambda + workDual + l
- loop_workdual_two_fama_precond:       for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	workDual[i] = (rhoinv*lambda_hat[i]) + r[i];
-	}
+        loop_workdual_two_fama_precond:       for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+            workDual[i] = (rhoinv*lambda_hat[i]) + r[i];
+        }
         
-   loop_workdual_scale_fama_precond:     for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	workDual_scale[i] = Einv_vec[i]*workDual[i];
-	}
+        loop_workdual_scale_fama_precond:     for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+            workDual_scale[i] = Einv_vec[i]*workDual[i];
+        }
         
         // Evaluate prox functions y = prox(workDual)
         custom_prox(y, workDual_scale);
         
-  loop_workdual_scale_yi_precond:      for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	y[i] = E_vec[i]*y[i];
-	}
+        loop_workdual_scale_yi_precond:      for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+            y[i] = E_vec[i]*y[i];
+        }
         
-  loop_workdual_scale_ri_lambda_precond:      for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	r[i] = r[i] - y[i];
-	 prev_lambda[i] = lambda[i];
-	lambda[i] = rho*(workDual[i] - y[i]);
-	} 
-	// just use the new y for computing residual
+        loop_workdual_scale_ri_lambda_precond:      for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+            r[i] = r[i] - y[i];
+            prev_lambda[i] = lambda[i];
+            lambda[i] = rho*(workDual[i] - y[i]);
+        }
+        // just use the new y for computing residual
 #endif
         
         
 #ifndef precond
         // workDual = L*x
         custom_mult_L(workDual, x);
-
+        
         loop_area2: {
-        	//#pragma HLS LOOP_MERGE
-        	loop_ri_fama_no_precond:      for(i = 0; i < nDual; i++) {
-				#pragma HLS PIPELINE
-        		prev_y[i] = y[i];
-        		r[i] = workDual[i] + l[i];
-        		workDual[i] = (lambda_hat[i]*rhoinv) + r[i];
-        	} // first save it here to use later for residual
+            //#pragma HLS LOOP_MERGE
+            loop_ri_fama_no_precond:      for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+                prev_y[i] = y[i];
+                r[i] = workDual[i] + l[i];
+                workDual[i] = (lambda_hat[i]*rhoinv) + r[i];
+            } // first save it here to use later for residual
+            
+            // Evaluate prox functions y = prox(workDual)
+            custom_prox(y, workDual);
+            
+            loop_ri_lambda_update_fama_no_precond:       for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+                r[i] = r[i] - y[i];
+                prev_lambda[i] = lambda[i];
+                lambda[i] = rho*(workDual[i] - y[i]);
+                
+            } // just use the new y for computing residual
+        }
         
-        	// Evaluate prox functions y = prox(workDual)
-        	custom_prox(y, workDual);
-        
-        	loop_ri_lambda_update_fama_no_precond:       for(i = 0; i < nDual; i++) {
-			#pragma HLS PIPELINE
-        	r[i] = r[i] - y[i];
-        	prev_lambda[i] = lambda[i];
-        	lambda[i] = rho*(workDual[i] - y[i]);
-
-        	} // just use the new y for computing residual
-       }
-    
         
 #endif
         
@@ -333,8 +331,8 @@ for (int i=0; i<38; i++){
         ////////////////////////////////////
         ////////// delete the following print line
         ////////////////////////////////////////
-     //   char *y_after_print="y_after_solve";
-      //  print_vector(y_after_print, y, nDual);
+        //   char *y_after_print="y_after_solve";
+        //  print_vector(y_after_print, y, nDual);
         //////////////// delete part ends here
         
         /**********************************************************************
@@ -351,13 +349,13 @@ for (int i=0; i<38; i++){
         //print_vector(workDual_print, workDual, nDual);
         
         
- //  loop_lambda_update_fama:     for(i = 0; i < nDual; i++) {
+        //  loop_lambda_update_fama:     for(i = 0; i < nDual; i++) {
 //	#pragma HLS PIPELINE
 //	   prev_lambda[i] = lambda[i];
 //	 lambda[i] = rho*(workDual[i] - y[i]);
 //	}
         
-       // char *lambda_after_print="lambda_after_solve";
+        // char *lambda_after_print="lambda_after_solve";
         //print_vector(lambda_after_print, lambda, nDual);
         
         /**********************************************************************
@@ -369,9 +367,9 @@ for (int i=0; i<38; i++){
 #ifdef adaptive_restart
         ad_rest = 0;
         for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	ad_rest += ( lambda_hat[i] - lambda[i])*(lambda[i] - prev_lambda[i]);
-	}
+#pragma HLS PIPELINE
+            ad_rest += ( lambda_hat[i] - lambda[i])*(lambda[i] - prev_lambda[i]);
+        }
         //printf("adrest is %f",ad_rest);
         if (ad_rest > 0){
             
@@ -383,9 +381,9 @@ for (int i=0; i<38; i++){
             
             // Compute workDual = rho*(-l + y - lambda)
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	workDual[i] = (-lambda_hat[i]);
-	}
+#pragma HLS PIPELINE
+                workDual[i] = (-lambda_hat[i]);
+            }
             
 #ifdef precond
             // kktRHS[1:nPrimal] = L'*workDual
@@ -399,53 +397,53 @@ for (int i=0; i<38; i++){
             
             
             for(i = 0; i < nPrimal; i++) {
-	#pragma HLS PIPELINE 
-	kktRHS[i] -= f[i];
-	}
+#pragma HLS PIPELINE
+                kktRHS[i] -= f[i];
+            }
             copy_vector(kktRHS+nPrimal, b, nEqCon);
-    
+            
             
             
             // Solve the KKT system
             start_kkt = split_tic();
-        custom_solve_kkt(x, kktRHS);
-        end_kkt = split_toc(start_kkt); 
-        sum_time = end_kkt + sum_time;
-        
-        // Next is Prox step
+            custom_solve_kkt(x, kktRHS);
+            end_kkt = split_toc(start_kkt);
+            sum_time = end_kkt + sum_time;
+            
+            // Next is Prox step
             
 #ifdef precond
             //workDual = L*x
             custom_mult_Ld(workDual, x);
             
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE
-	 r[i] = workDual[i] + ld[i];
-	}
+#pragma HLS PIPELINE
+                r[i] = workDual[i] + ld[i];
+            }
             
             // workDual = lambda + workDual + l
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	workDual[i] = (rhoinv*lambda_hat[i]) + r[i];
-	}
+#pragma HLS PIPELINE
+                workDual[i] = (rhoinv*lambda_hat[i]) + r[i];
+            }
             
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	workDual_scale[i] = Einv_vec[i]*workDual[i];
-	}
+#pragma HLS PIPELINE
+                workDual_scale[i] = Einv_vec[i]*workDual[i];
+            }
             
             // Evaluate prox functions y = prox(workDual)
             custom_prox(y, workDual_scale);
             
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	y[i] = E_vec[i]*y[i];
-	}
+#pragma HLS PIPELINE
+                y[i] = E_vec[i]*y[i];
+            }
             
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	r[i] = r[i] - y[i];
-	}
+#pragma HLS PIPELINE
+                r[i] = r[i] - y[i];
+            }
 #endif
             
             
@@ -454,31 +452,31 @@ for (int i=0; i<38; i++){
             custom_mult_L(workDual, x);
             
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	r[i] = workDual[i] + l[i];
-	}
+#pragma HLS PIPELINE
+                r[i] = workDual[i] + l[i];
+            }
             // workDual = lambda + workDual + l
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE 
-	workDual[i] = (rhoinv*lambda_hat[i]) + r[i];
-	}
+#pragma HLS PIPELINE
+                workDual[i] = (rhoinv*lambda_hat[i]) + r[i];
+            }
             
             // Evaluate prox functions y = prox(workDual)
             custom_prox(y, workDual);
             
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE
-	 r[i] = r[i] - y[i];
-	}
+#pragma HLS PIPELINE
+                r[i] = r[i] - y[i];
+            }
             
 #endif
             
             copy_vector(prev_lambda, lambda_hat, nDual);
             // Dual update
             for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE
-	 lambda[i] = rho*(workDual[i] - y[i]);
-	}
+#pragma HLS PIPELINE
+                lambda[i] = rho*(workDual[i] - y[i]);
+            }
         }
         
 #endif
@@ -490,7 +488,7 @@ for (int i=0; i<38; i++){
          *
          **********************************************************************/
 //#if 0
-         itr_counter = itr_counter + 1;
+        itr_counter = itr_counter + 1;
         // Check convergence
         if (itr_counter == opt->ITR_PER_CONV_TEST)
         {   itr_counter = 0;
@@ -507,10 +505,10 @@ for (int i=0; i<38; i++){
             if (rDual < DualTol)
             {
                 
- loop_convergence_check_workdual_fama:               for(i = 0; i < nDual; i++) {
-	#pragma HLS PIPELINE
-	 workDual[i] =  prev_lambda[i] - lambda[i] ;
-	}
+                loop_convergence_check_workdual_fama:               for(i = 0; i < nDual; i++) {
+#pragma HLS PIPELINE
+                    workDual[i] =  prev_lambda[i] - lambda[i] ;
+                }
                 
                 
 #ifdef precond
@@ -533,7 +531,7 @@ for (int i=0; i<38; i++){
             }
         }
     }
-
+    
 //#endif
     
 //     end_total = split_toc(start_total);
@@ -546,8 +544,8 @@ for (int i=0; i<38; i++){
     sol->itr = itr;
     sol->rDual = rDual;
     sol->rPrimal = rPrimal;
-   // sol->time_sol = sum_time;
-   // sol->time_total = end_total;
+    // sol->time_sol = sum_time;
+    // sol->time_total = end_total;
     // Deallocate the memory in case of suitesparse
 #ifdef suitesparse_linsolve
     free(Li_ss);

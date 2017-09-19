@@ -1,3 +1,4 @@
+
 classdef coderFunc_mldivide < coderFunc
     
     methods
@@ -187,6 +188,7 @@ classdef coderFunc_mldivide < coderFunc
                     
                     
                     invA = inv(full(A));
+                    invA = invA(1:nPrimal,:);
                     invA(abs(invA) < zero_tol) = 0;
                     
                     
@@ -196,7 +198,7 @@ classdef coderFunc_mldivide < coderFunc
 %                     subplot(2,1,2)
 %                     spy(A)
 %                     
-                    fInv = coderFunc_times([func_name '_inv'], invA, 'Astr', Astr);
+                    fInv = coderFunc_times([func_name '_inv'], invA, 'Astr', Astr, 'method', 'for_loops');
                     
                     % Copy to the body of the function into ours
                     f.p(fInv.body);

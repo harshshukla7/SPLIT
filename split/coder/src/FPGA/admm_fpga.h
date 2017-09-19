@@ -28,27 +28,27 @@
 #include "user_probData.h"
 #endif
 
-#include "splitTimer.h" // needed only in case of timings
+#include "foo_data.h"
+
+//#include "splitTimer.h" // needed only in case of timings
 
 // Structure to return solution
 struct Sol { 
-  double primal[nPrimal]; // Primal variable
-  double dual[nDual];     // Dual variable
-  int    itr;             // Number of iterations
-  double rDual;           // Dual residual
-  double rPrimal;         // Primal residual
-  long double time_sol;            // to pass measured time
-  long double time_total;  // total time taken
-  double aux_prim[nDual];  // y
+ data_t_primal_out primal[nPrimal]; // Primal variable
+  data_t_dual_out dual[nDual];     // Dual variable
+  data_t_iterates_out    itr;             // Number of iterations
+  data_t_iterates_out rDual;           // Dual residual
+  data_t_iterates_out rPrimal;         // Primal residual
+  data_t_aux_primal_out aux_prim[nDual];  // y
 };
 typedef struct Sol Sol;
 
 // Options
 struct Opt { 
-  double primalTol;           // Primal tolerance
-  double dualTol;             // Dual tolerance
-  unsigned int   MAXITR;              // Max allowed number of iterations
-  unsigned int   ITR_PER_CONV_TEST;   // Number of iterations between convergence tests
+  data_t_tol_iterates_in primalTol;           // Primal tolerance
+  data_t_tol_iterates_in dualTol;             // Dual tolerance
+  data_t_tol_iterates_in MAXITR;              // Max allowed number of iterations
+  data_t_tol_iterates_in ITR_PER_CONV_TEST;   // Number of iterations between convergence tests
 }; 
 typedef struct Opt Opt;
 // const Opt Opt_Default = {1e-4, 1e-4, 1000, 10};
@@ -57,6 +57,6 @@ typedef struct Opt Opt;
 void initialize();
 
 // Solve the problem
-void solve(Sol *sol, double par[nParam], const Opt *opt);
+void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt);
 
 #endif

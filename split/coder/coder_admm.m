@@ -59,12 +59,15 @@ if(~isfield(settings, 'Lin_Solve'))
     Lin_Solve = 'auto';
 end
 
+hard_mldivide = 0; % default is no PL or SOC. it is processors
 
 FPGA_PL = 0;
 if(isfield(settings, 'FPGA_PL'))
     
     if (settings.FPGA_PL == 1)
         FPGA_PL = 1;
+        hard_mldivide = 2;
+        
         
         if(~isfield(settings, 'Mat_Vec'))
             Mat_Vec = 'auto_FPGA';
@@ -83,6 +86,8 @@ if(isfield(settings, 'FPGA_SoC'))
     
     if (settings.FPGA_SoC == 1)
         FPGA_SoC = 1;
+        hard_mldivide = 1;
+        
         
         if(~isfield(settings, 'Mat_Vec'))
             Mat_Vec = 'auto';
@@ -98,6 +103,18 @@ end
 dat  = prob.coderData;
 prox  = prob.prox;
 sd   = splitData;
+
+
+if FPGA_PL == 0
+    
+    sd.hl('#include "user_foo_data.h" \n');
+    
+else
+    
+    sd.hl('#include "foo_data.h" \n');
+    
+end
+
 
 if(isfield(settings, 'primal_vars_x'))
     %% ifdef warm start x
@@ -187,19 +204,25 @@ if(strcmp(settings.adaptive,'yes') && isfield(settings, 'c_adapt_step'))
 else
     sd.hl('#define c_adapt_step %f \n',10);
 end
+
 rhoinv = 1/rho;
+
+sd.hl('#define rho_init %f', rho);
+sd.hl('#define rho_inv_init %f', rhoinv);
+
+
 if(strcmp(settings.adaptive,'no'))
-    sd.hl('extern  REAL rho;\n');
-    sd.cl(' REAL rho = %f;\n', rho);
-    sd.hl('extern  REAL rhoinv; \n');
-    sd.cl(' REAL rhoinv = %f;', rhoinv);
+    sd.hl('extern  real rho;\n');
+    %     sd.cl(' REAL rho = %f;\n', rho);
+    sd.hl('extern  real rhoinv; \n');
+    %     sd.cl(' REAL rhoinv = %f;', rhoinv);
 end
 
 if(strcmp(settings.adaptive,'yes'))
-    sd.hl('extern REAL rho_tmp;\n');
-    sd.cl(' REAL rho_tmp = %f;\n', rho);
-    sd.hl('extern REAL rhoinv_tmp; \n');
-    sd.cl(' REAL rhoinv_tmp = %f;', rhoinv);
+    sd.hl('extern real rho_tmp;\n');
+    %     sd.cl(' REAL rho_tmp = %f;\n', rho);
+    sd.hl('extern real rhoinv_tmp; \n');
+    %     sd.cl(' REAL rhoinv_tmp = %f;', rhoinv);
 end
 
 
@@ -226,6 +249,15 @@ else
 end
 
 %%  KKT solve step. Step 1 in Algorithm
+
+if(~isfield(settings, 'latency'))
+    settings.latency = 8;
+    
+end
+
+if(~isfield(settings, 'paral'))
+    settings.paral = 1;
+end
 
 %%%% First extract important matrix and also save variables
 
@@ -302,9 +334,9 @@ if(strcmp(settings.adaptive,'yes'))
         [V,D1] = qdwheig(C);
         cas = 1;
         sd.hl('#define adap_case_1\n');
-        sd.hl('extern const REAL rho1;\n');
+        sd.hl('extern const real rho1;\n');
         sd.cl('const REAL rho1 = 1.0;\n');
-        sd.hl('extern const REAL rho2;\n');
+        sd.hl('extern const real rho2;\n');
         
     elseif (min(eig(dat.Q))>0) && (isempty(dat.A))
         H = LL;   M = dat.Q;
@@ -313,9 +345,9 @@ if(strcmp(settings.adaptive,'yes'))
         [V,D1] = qdwheig(C);
         cas = 2;
         sd.hl('#define adap_case_2\n');
-        sd.hl('extern const REAL rho1;\n');
-        sd.hl('extern const REAL rho2;\n');
-        sd.cl('const REAL rho2 = %1.0;\n');
+        sd.hl('extern const real rho1;\n');
+        sd.hl('extern const real rho2;\n');
+        sd.cl('const real rho2 = %1.0;\n');
         
     else
         error('Conditions for simultaneous diagonalization not satisfied. Adaptive ADMM not adviced - increased cost per iteration or try non-adaptive ADMM')
@@ -354,25 +386,54 @@ if(strcmp(settings.adaptive,'yes'))
     
     
     %%% add matrix vector multiplication
-    sd.add_function(...
-        coderFunc_times('custom_mult_XTrans', sparse(X'), 'Astr', 'XTrans_adapt_vec', 'method', Mat_Vec));
-    sd.add_function(...
-        coderFunc_times('custom_mult_X', sparse(X), 'Astr', 'X_adapt_vec', 'method', Mat_Vec));
     
+    X_trans_name = coderFunc_times('custom_mult_XTrans', sparse(X'), 'Astr', 'XTrans_adapt_vec', 'method', Mat_Vec);
+    sd.add_function(Xtrans_name);
+    
+    if strcmp(X_trans_name.desc, 'FPGA_matvec_sparse')
+        
+        sd.hl('#include "user_custom_mult_Xtrans_sparse_mv_mult.h" \n');
+        
+        
+    end
+    
+    X_name = coderFunc_times('custom_mult_X', sparse(X), 'Astr', 'X_adapt_vec', 'method', Mat_Vec);
+    sd.add_function(X_name);
+    
+    if strcmp(X_name.desc, 'FPGA_matvec_sparse')
+        
+        sd.hl('#include "user_custom_mult_X_sparse_mv_mult.h" \n');
+        
+        
+    end
     
     if(strcmp(settings.precond,'yes'))
         
         Ld = settings.E * dat.L;
-        sd.add_function(...
-            coderFunc_times('custom_mult_Ldtrans', sparse(Ld'), 'Astr', 'Ldtrans', 'method', Mat_Vec));
         
+        L_trans_name = coderFunc_times('custom_mult_Ldtrans', sparse(Ld'), 'Astr', 'Ldtrans', 'method', Mat_Vec);
+        sd.add_function(L_trans_name);
+        
+        if strcmp(L_trans_name.desc, 'FPGA_matvec_sparse')
+            
+            sd.hl('#include "user_custom_mult_Ldtrans_sparse_mv_mult.h" \n');
+            
+            
+        end
         
     end
     
     
     if(strcmp(settings.precond,'no'))
-        sd.add_function(...
-            coderFunc_times('custom_mult_Ltrans', sparse(dat.L'), 'Astr', 'Ltrans', 'method', Mat_Vec));
+        L_trans_name = coderFunc_times('custom_mult_Ltrans', sparse(dat.L'), 'Astr', 'Ltrans', 'method', Mat_Vec);
+        sd.add_function(L_trans_name);
+        
+        if strcmp(L_trans_name.desc, 'FPGA_matvec_sparse')
+            
+            sd.hl('#include "user_custom_mult_Ltrans_sparse_mv_mult.h" \n');
+            
+            
+        end
     end
     
     
@@ -388,8 +449,16 @@ if(strcmp(settings.adaptive,'no'))
         prox(1).l
         %%
         Ld = settings.E * dat.L;
-        sd.add_function(...
-            coderFunc_times('custom_mult_Ldtrans', sparse(Ld'), 'Astr', 'Ldtrans', 'method', Mat_Vec));
+        
+        L_trans_name = coderFunc_times('custom_mult_Ldtrans', sparse(Ld'), 'Astr', 'Ldtrans', 'method', Mat_Vec);
+        sd.add_function(L_trans_name);
+        
+        if strcmp(L_trans_name.desc, 'FPGA_matvec_sparse')
+            
+            sd.hl('#include "user_custom_mult_Ldtrans_sparse_mv_mult.h" \n');
+            
+            
+        end
         
         K = [dat.Q+rho*Ld'*Ld A'; A zeros(size(A,1))];
         spy(K)
@@ -403,7 +472,7 @@ if(strcmp(settings.adaptive,'no'))
         end
         
         nPrimal_solve = size(dat.Q,1);
-        mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , latency, 'paral', paral);
+        mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' ,settings.latency, 'paral', settings.paral, 'hard', hard_mldivide);
         
         
         if strcmp(mldivide.desc,'ldl_ss')
@@ -421,19 +490,24 @@ if(strcmp(settings.adaptive,'no'))
             
         end
         
-        if (strcmp(mldivide.desc,'invert_FPGA_tree') || strcmp(mldivide.desc,'invert_FPGA_MAC'))
-            
-            sd.hl('#include "user_mv_mult.h" \n');
-        end
-
+        
         
         sd.add_function(mldivide);
         
     end
     
     if(strcmp(settings.precond,'no'))
-        sd.add_function(...
-            coderFunc_times('custom_mult_Ltrans', sparse(dat.L'), 'Astr', 'Ltrans', 'method', Mat_Vec));
+        
+        L_trans_name = coderFunc_times('custom_mult_Ltrans', sparse(dat.L'), 'Astr', 'Ltrans', 'method', Mat_Vec);
+        sd.add_function(L_trans_name);
+        
+        if strcmp(L_trans_name.desc, 'FPGA_matvec_sparse')
+            
+            sd.hl('#include "user_custom_mult_Ltrans_sparse_mv_mult.h" \n');
+            
+            
+        end
+        
         K = [dat.Q+rho*L'*L A'; A zeros(size(A,1))];
         
         nPrimal_solve = size(dat.Q,1);
@@ -446,7 +520,7 @@ if(strcmp(settings.adaptive,'no'))
             paral = floor(size(K,1)/3);
         end
         
-        mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , latency, 'paral', paral);
+        mldivide = coderFunc_mldivide('custom_solve_kkt', K, 'Astr', 'KKT','method',Lin_Solve, 'nPrimal', nPrimal_solve, 'lat' , settings.latency, 'paral', settings.paral, 'hard', hard_mldivide);
         
         if strcmp(mldivide.desc,'ldl_ss')
             sd.cl('double *Lx_ss;');
@@ -462,14 +536,18 @@ if(strcmp(settings.adaptive,'no'))
             
         end
         
-        if (strcmp(mldivide.desc,'invert_FPGA_tree') || strcmp(mldivide.desc,'invert_FPGA_MAC'))
-            
-            sd.hl('#include "user_mv_mult.h" \n');
-        end
-
+        
         
         sd.add_function(mldivide);
+        
     end
+    
+    if (strcmp(mldivide.desc,'invert_FPGA_tree') || strcmp(mldivide.desc,'invert_FPGA_MAC'))
+        
+        sd.hl('#include "user_mv_mult.h" \n');
+    end
+    
+    
     
     LNZ=nnz(K)-nnz(triu(K));
     ANZ=nnz(triu(K));
@@ -489,8 +567,8 @@ end
 
 %% Calculate prox function
 
-sd.hl('extern REAL prox_var; \n');
-sd.cl(' REAL prox_var = %f;', 0.0);
+sd.hl('extern real prox_var; \n');
+sd.cl(' real prox_var = %f;', 0.0);
 
 if(strcmp(settings.precond,'yes'))
     
@@ -503,9 +581,11 @@ if(strcmp(settings.precond,'yes'))
     a_name = sprintf('ld');
     sd.add_var(a_name,ld,'type','real');
     % workDual = L*x
-    sd.add_function(coderFunc_times('custom_mult_Ld', sparse(Ld), ...
-        'y_name', 'workDual', 'x_name', 'x', 'Astr', 'Ld', 'method', Mat_Vec));
     
+    
+    L_times_name = (coderFunc_times('custom_mult_Ld', sparse(Ld), ...
+        'y_name', 'workDual', 'x_name', 'x', 'Astr', 'Ld', 'method', Mat_Vec));
+    sd.add_function = (L_times_name);
     % Evaluate prox functions y = prox(workDual)
     sd.add_function(coderFunc_prox(dat));
     
@@ -525,11 +605,19 @@ end
 
 if(strcmp(settings.precond,'no'))
     % workDual = L*x
-    sd.add_function(coderFunc_times('custom_mult_L', sparse(dat.L), ...
-        'y_name', 'workDual', 'x_name', 'x', 'Astr', 'L', 'method', Mat_Vec));
     
+    L_times_name =(coderFunc_times('custom_mult_L', sparse(dat.L), ...
+        'y_name', 'workDual', 'x_name', 'x', 'Astr', 'L', 'method', Mat_Vec));
+    sd.add_function(L_times_name);
     % Evaluate prox functions y = prox(workDual)
     sd.add_function(coderFunc_prox(dat));
+    
+end
+
+if strcmp(L_times_name.desc, 'FPGA_matvec_sparse')
+    
+    sd.hl('#include "user_custom_mult_L_sparse_mv_mult.h" \n');
+    
     
 end
 

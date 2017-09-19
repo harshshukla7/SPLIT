@@ -56,6 +56,7 @@ if(~isfield(settings, 'Lin_Solve'))
     Lin_Solve = 'ldl_ss';
 end
 
+hard_mldivide = 0; % default is no PL or SOC. it is processors
 FPGA_PL = 0;
 if(isfield(settings, 'FPGA_PL'))
     

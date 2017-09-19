@@ -109,12 +109,12 @@ classdef coderFunc_prefactor < coderFunc
                    
                    %%%% step 3
                    
-                   f.pl('double Y[N_ss];');
+                   f.pl('real Y[N_ss];');
                    f.pl('int  Parent [N_ss], Lnz [N_ss], Flag [N_ss], Pattern [N_ss];');
                    f.pl('ldl_symbolic (N_ss, Ap_ss, Ai_ss, Lp_ss, Parent, Lnz, Flag, NULL, NULL);');
                    f.pl('int tmp_ss=Lp_ss[N_ss];');
                    f.pl('Li_ss = malloc(sizeof(int)*tmp_ss);');
-                   f.pl('Lx_ss = malloc(sizeof(double)*tmp_ss);');
+                   f.pl('Lx_ss = malloc(sizeof(real)*tmp_ss);');
                    %f.pl('printf ("Nonzeros in L, excluding diagonal: %%d\n", Lp [N_ss]) ;');
                    f.pl('d_ss[0] = ldl_numeric (N_ss, Ap_ss, Ai_ss, Ax_ss, Lp_ss, Parent, Lnz, Li_ss, Lx_ss, D_ss, Y, Pattern, Flag, NULL, NULL) ;');
                    %f.pl('printf ("d_ss is : %%d\n", d_ss[0]) ;');

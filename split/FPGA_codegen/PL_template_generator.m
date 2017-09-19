@@ -29,7 +29,7 @@ settings.hardware = default_hardware;
 default_data_type = 'float';
 
 if ~isfield(settings, 'data_type'), settings.data_type = default_data_type; end
-if (strcmp(settings.data_type, 'fixed') == 1)
+if (strcmp(settings.data_type, 'fix') == 1)
     
     default_integ_bits = '15';
     default_fract_bits = '15';
@@ -207,7 +207,7 @@ if strcmp(settings.data_type, 'float')
     
     data_t = 'float';
     
-elseif strcmp(settings.data_type, 'fixed')
+elseif strcmp(settings.data_type, 'fix')
     data_t = strcat('fix:',settings.integ_bits, ':', settings.fract_bits);
     
 else

@@ -8,7 +8,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "user_foo_data.h"
+#include "foo_data.h"
 #define real data_t_primal_out
 
 

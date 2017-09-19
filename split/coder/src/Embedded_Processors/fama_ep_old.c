@@ -28,14 +28,14 @@ static real s[nPrimal];           // Dual error
 static real b_tmp[nEqCon];
 
 
-static real beta, beta_k, Ep, ibeta_k, beta_1, ibeta_1;
+static double beta, beta_k, Ep, ibeta_k, beta_1, ibeta_1;
 
 #ifdef precond
 static real workDual_scale[nDual]; // Tempoary workdual scaled with E^-1
 #endif
 
 #ifdef adaptive_restart
-real ad_rest ;
+double ad_rest ;
 #endif
 
 // Initialize values of all variables
@@ -112,15 +112,6 @@ void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
     const real DualTol   = (opt->dualTol);
     const real PrimalTol = (opt->primalTol);
     
-    ////////////////////////////////////////
-    //////////////// Warm start
-    ////////////////////////////////////////
-    
-    copy_vector(x, sol->primal, nPrimal+nEqCon);
-    copy_vector(lambda, sol->dual, nDual);
-    
-    
-    
     //for (int i=0; i<28; i++){
     //  printf("Ap_ss matrix entry %d is %f \n",i ,Ax_ss );
 //}
@@ -144,8 +135,8 @@ for (int i=0; i<38; i++){
     //  printf("Diagonal matrix entry %d is %f \n",i ,D_ss );
 //}
     
-    //long double start_kkt, end_kkt, sum_time, start_total, end_total; 
-    //sum_time = 0;    
+    long double start_kkt, end_kkt, sum_time, start_total, end_total; 
+    sum_time = 0;    
     //opt->MAXITR
 //     start_total = split_tic();
    FAMA_main_iteration: for(itr=0; itr < opt->MAXITR ; itr++)

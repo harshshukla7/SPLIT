@@ -46,7 +46,7 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
   int itr, i;
     
   
-  loadData();
+  //loadData();
   // Compute: l = pL*par + l_const, etc
   custom_compute_parametric(l, f, b, par);
 

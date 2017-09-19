@@ -26,7 +26,7 @@ static real kktRHS[nPrimal+nEqCon]; // RHS when solving the KKT system
 static real r[nDual];             // Primal error
 static real s[nPrimal];           // Dual error
 static real b_tmp[nEqCon];
-
+static real output_matvec_float[nPrimal+nEqCon];
 
 static double beta, beta_k, Ep, ibeta_k, beta_1, ibeta_1;
 
@@ -64,7 +64,7 @@ void initialize(){
 
 // Function declaration
 //void solve(Sol *sol, real par[nParam], const Opt *opt, data_t_tol_iterates_in tol_iterates_in_int[TOL_ITERATES_IN_LENGTH], data_t_iterates_out iterates_out_int[ITERATES_OUT_LENGTH] )
-void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt )
+void solve(Sol *sol, data_t_primal_out par[nParam], const Opt *opt )
 {
     
     //iterates_out_int[0] = tol_iterates_in_int[0];
@@ -212,7 +212,7 @@ for (int i=0; i<38; i++){
       //  custom_solve_kkt(x, kktRHS);
         
              send_pl_vec_in_in(kktRHS);
-    start_foo(1,0,1);
+    start_foo(1,1);
 
     while(!(finished_foo())){;}
     
@@ -246,6 +246,7 @@ for (int i=0; i<38; i++){
          ***********************************************************************/
         
         copy_vector(prev_y, y, nDual);
+        zero_vector(workDual, nDual);
         
 #ifdef precond
 // workDual = L*x

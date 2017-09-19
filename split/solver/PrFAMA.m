@@ -152,20 +152,20 @@ for jjj = 1  :  settings.maxItr
   
   hat.lam = lam + (prev.beta-1)*(lam - prev.lam)/beta;
   
-  disp('lambda hat after nesterov')
-  hat.lam
+%   disp('lambda hat after nesterov')
+%   hat.lam
   
   
   %% Step 2 : solve linear system
   prev.x = x;
   
-  disp('before kkt solve')
-  (rhsKKTconst - rhsKKTvar*hat.lam)
+%   disp('before kkt solve')
+%   (rhsKKTconst - rhsKKTvar*hat.lam)
   
   t = KKT \ (rhsKKTconst - rhsKKTvar*hat.lam);
   
-  disp('kkt solve')
-  t
+%   disp('kkt solve')
+%   t
   
   x = t(1:n);
   
@@ -178,8 +178,8 @@ for jjj = 1  :  settings.maxItr
     yd(ind) = diag(prec.E(ind,ind)).*prox(i).func(q(ind), 1/rho*proxWeight(i)); 
   end
   
-  disp('prox solve')
-  yd     
+%   disp('prox solve')
+%   yd     
   
   %rho
   %L*x+l+hat.lam/rho
@@ -191,8 +191,8 @@ for jjj = 1  :  settings.maxItr
 %           disp('workdual is')
 %           (L*x+l) + hat.lam/rho
           
-  disp('lam solve')    
-  lam = hat.lam + rho*(L*x + l - yd)
+%   disp('lam solve')    
+  lam = hat.lam + rho*(L*x + l - yd);
   
   %% Step 5: adaptive restart
   if isfield(settings,'restart')

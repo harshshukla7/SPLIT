@@ -108,6 +108,16 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
   long double start_kkt, end_kkt, sum_time, start_total, end_total;
     sum_time = 0;
     
+    
+    ////////////////////////////////////////
+    //////////////// Warm start
+    ////////////////////////////////////////
+    
+    copy_vector(x, sol->primal, nPrimal+nEqCon);
+    copy_vector(lambda, sol->dual, nDual);
+    
+    
+    
   //opt->MAXITR
      start_total = split_tic();
   for(itr=0; itr< opt->MAXITR ; itr++) 

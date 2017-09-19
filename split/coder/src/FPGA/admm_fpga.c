@@ -8,28 +8,28 @@
  *
  */
 
-#include "admm.h"
+#include "user_admm.h"
 //#include "ama.h"
 
 // Variable Definitions
-static double x[nPrimal+nEqCon]; // Extra rows are working space for solving KKT system
-static double y[nDual];
-static double lambda[nDual];
-static double prev_lambda[nDual];
-static double prev_y[nDual];
+static real x[nPrimal+nEqCon]; // Extra rows are working space for solving KKT system
+static real y[nDual];
+static real lambda[nDual];
+static real prev_lambda[nDual];
+static real prev_y[nDual];
 
-static double workDual[nDual];      // Working memory of size dual
-static double kktRHS[nPrimal+nEqCon]; // RHS when solving the KKT system
-static double r[nDual];             // Dual error
-static double s[nPrimal];           // Primal error
+static real workDual[nDual];      // Working memory of size dual
+static real kktRHS[nPrimal+nEqCon]; // RHS when solving the KKT system
+static real r[nDual];             // Dual error
+static real s[nPrimal];           // Primal error
 
 #ifdef precond
-static double workDual_scale[nDual]; // Tempoary workdual scaled with E^-1
+static real workDual_scale[nDual]; // Tempoary workdual scaled with E^-1
 #endif
 
 
 // Initialize values of all variables
-void zero_vector(double *vec, int len) {for(int i=0; i<len; i++) vec[i]=0.0;}
+void zero_vector(real *vec, int len) {for(int i=0; i<len; i++) vec[i]=0.0;}
 void initialize()
 {
     zero_vector(x, nPrimal+nEqCon);
@@ -41,13 +41,13 @@ void initialize()
 }
 
 // Function declaration
-void solve(Sol *sol, double par[nParam], const Opt *opt)
+void solve(Sol *sol, data_t_state0_in par[nParam], const Opt *opt)
 {
     
-    double rDual, rPrimal;
+    real rDual, rPrimal;
     int itr, i;
     
-    loadData();
+    
     // Compute: l = pL*par + l_const, etc
 #ifndef precond
     custom_compute_parametric(l, f, b, par);
@@ -62,17 +62,17 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
     
     //printf("KKT RHS is %f, %f, %f, and\n b is %f, %f, %f and\n nprimal is %f", kktRHS[0], kktRHS[2], kktRHS[1], b[0], b[1], b[2], nPrimal );
     // Compute termination tolerances
-    //const double DualTolSquared   = (opt->dualTol)*(opt->dualTol);
-    //const double PrimalTolSquared = (opt->primalTol)*(opt->primalTol);
+    //const real DualTolSquared   = (opt->dualTol)*(opt->dualTol);
+    //const real PrimalTolSquared = (opt->primalTol)*(opt->primalTol);
     
-    const double DualTol   = (opt->dualTol);
-    const double PrimalTol = (opt->primalTol);
+    const real DualTol   = (opt->dualTol);
+    const real PrimalTol = (opt->primalTol);
     
     //for (int i=0; i<28; i++){
     //  printf("Ap_ss matrix entry %d is %f \n",i ,Ax_ss );
     //}
     
-    custom_compute_prefactor();
+   // custom_compute_prefactor();
     /*for (int i=0; i<28; i++){
      * printf("D_ss before in the main  just out side prefactor %d is %f\n", i, D_ss[i]);
      * }
@@ -91,10 +91,9 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
     //  printf("Diagonal matrix entry %d is %f \n",i ,D_ss );
     //}
     
-#ifdef adaptive
-    double rho = rho_tmp;
-    double rhoinv = rhoinv_tmp;
-#endif
+
+    real rho = rho_init;
+    real rhoinv = rho_inv_init;
    
     
     /* Iterative Loop for solving
@@ -135,15 +134,22 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
     copy_vector(lambda, warm_dual_lambda, nDual);
     #endif
     
-    long double start_kkt, end_kkt, sum_time, start_total, end_total;
-    sum_time = 0.0;
+    
+    ////////////////////////////////////////
+    //////////////// Warm start
+    ////////////////////////////////////////
+    
+    copy_vector(x, sol->primal, nPrimal+nEqCon);
+    copy_vector(lambda, sol->dual, nDual);
+    
+    
+    //long real start_kkt, end_kkt, sum_time, start_total, end_total;
+    //sum_time = 0.0;
     //opt->MAXITR
-    start_total = split_tic();
-    for(itr=0; itr < opt->MAXITR ; itr++)
+    //start_total = split_tic();
+    ADMM_main_iteration:for(itr=0; itr < opt->MAXITR ; itr++)
     {
         //printf("\n\n\n\n\n\n\n\n iteration %d \n\n\n\n\n\n\n\n" ,itr);
-        copy_vector(prev_lambda, lambda, nDual);
-        copy_vector(prev_y, y, nDual);
         
         
         /**********************************************************************
@@ -172,6 +178,8 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
         // 	substep 3 : matrix-vector multiplication
         // 	substep 4 : matrix-vector multiplication
         
+        copy_vector(prev_lambda, lambda, nDual);
+        copy_vector(prev_y, y, nDual);
         
         
 #ifdef precond
@@ -276,6 +284,10 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
 #ifdef precond
         //printf(" \n \n %f is rho. \n It goes in the not adaptive precondition condition \n",rho);
         // Compute workDual = rho*(-l + y - lambda)
+        
+        copy_vector(prev_lambda, lambda, nDual);
+        copy_vector(prev_y, y, nDual);
+        
         forall(nDual) workDual[i] = (rho*(-ld[i] + y[i])) - lambda[i];
         
         /////////////////////////////////////
@@ -303,9 +315,17 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
         
 #ifndef precond
         
-        // Compute workDual = rho*(-l + y - lambda)
-        forall(nDual) workDual[i] = ((rho*(-l[i] + y[i])) - lambda[i]);
         
+        
+        // Compute workDual = rho*(-l + y - lambda)
+        
+        
+        for (i=0; i<nDual; i++){
+         #pragma HLS PIPELINE
+            prev_lambda[i] = lambda[i]; // copy the solution
+            prev_y[i] = y[i];
+            workDual[i] = ((rho*(-l[i] + y[i])) - lambda[i]);
+        }
         //printf("\n\n\n rho is %f \n\n\n",rho);
         //char *WD_tp = "workdual";
         //print_vector(WD_tp, workDual, nDual);
@@ -315,8 +335,14 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
         // kktRHS[1:nPrimal] = L'*workDual
         custom_mult_Ltrans(kktRHS, workDual);
         //
-        forall(nPrimal) kktRHS[i] -= f[i];
-        copy_vector(kktRHS+nPrimal, b, nEqCon);
+        //forall(nPrimal) kktRHS[i] -= f[i];
+        
+        for(i=0; i<nPrimal; i++){
+         #pragma HLS PIPELINE
+            kktRHS[i] -= f[i];
+        
+        }
+        //copy_vector(kktRHS+nPrimal, b, nEqCon);
         
         ////////////////////////////////////
         ////////// delete the following print line
@@ -325,12 +351,12 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
         //print_vector(KKT_RHS_beforesovle, kktRHS, (nPrimal+nEqCon));
         //////////////// delete part ends here
         
-        start_kkt = split_tic(); // for timings
+        //start_kkt = split_tic(); // for timings
         // Solve the KKT system
         custom_solve_kkt(x, kktRHS);
-        end_kkt = split_toc(start_kkt);
+        //end_kkt = split_toc(start_kkt);
         //printf("end_KKt is %Lf\n",end_kkt);
-        sum_time = end_kkt + sum_time;
+        //sum_time = end_kkt + sum_time;
         
         
 #endif
@@ -413,17 +439,32 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
 #ifndef precond
         // workDual = L*x
         custom_mult_L(workDual, x);
-        forall(nDual) r[i] = workDual[i] + l[i] - y[i];
         // workDual = lambda + workDual + l
         
         
 #ifndef alpha1
-        forall(nDual) workDual[i] = (r[i])*(alpha) + y[i] + (lambda[i]*rhoinv);
+        
+        for(i=0; i<nDual; i++){
+         #pragma HLS PIPELINE
+            r[i] = workDual[i] + l[i] - y[i];
+            (r[i])*(alpha) + y[i] + (lambda[i]*rhoinv);
+        }
+        //forall(nDual) r[i] = workDual[i] + l[i] - y[i]; 
+        
+        //forall(nDual) workDual[i] = (r[i])*(alpha) + y[i] + (lambda[i]*rhoinv);
         
 #endif
         
 #ifdef alpha1
-        forall(nDual) workDual[i] = r[i] + y[i] + lambda[i]*rhoinv;
+        
+        for(i=0; i<nDual; i++){
+            #pragma HLS PIPELINE
+            r[i] = workDual[i] + l[i] - y[i];
+            workDual[i] = r[i] + y[i] + lambda[i]*rhoinv;
+        }
+        //forall(nDual) r[i] = workDual[i] + l[i] - y[i];
+        
+        //forall(nDual) workDual[i] = r[i] + y[i] + lambda[i]*rhoinv;
 #endif
         
         
@@ -457,11 +498,20 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
         
         // Dual update
 #ifdef gamma1
-        forall(nDual) lambda[i] = rho*(+workDual[i] - y[i]);
+        for(i=0; i<nDual; i++){
+         #pragma HLS PIPELINE
+         lambda[i] = rho*(+workDual[i] - y[i]);   
+        }
+       // forall(nDual) lambda[i] = rho*(+workDual[i] - y[i]);
 #endif
         
 #ifndef gamma1
-        forall(nDual) lambda[i] = gamma*rho*(+workDual[i] - y[i]);
+        for(i=0; i<nDual; i++){
+         #pragma HLS PIPELINE
+         lambda[i] = gamma*rho*(+workDual[i] - y[i]);   
+        }
+        
+        //forall(nDual) lambda[i] = gamma*rho*(+workDual[i] - y[i]);
       
         //printf("\n\n\n gamma is %f and rho is %f \n\n\n",gamma,rho);
 #endif
@@ -656,7 +706,7 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
         }
     }
     
-    end_total = split_toc(start_total);
+    //end_total = split_toc(start_total);
     //////////////////////////////////////
     // Copy to solution structure
     copy_vector(sol->primal, x, nPrimal);
@@ -665,8 +715,8 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
     sol->itr = itr;
     sol->rDual = rDual;
     sol->rPrimal = rPrimal;
-    sol->time_sol = sum_time;
-    sol->time_total = end_total;
+   // sol->time_sol = sum_time;
+   // sol->time_total = end_total;
     // deallocate the memory
     //char *y_after_print="y_after_solve";
     //print_vector(y_after_print, y, nDual);

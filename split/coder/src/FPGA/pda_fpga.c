@@ -100,6 +100,14 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
     //opt->MAXITR
     start_total = split_tic(); 
     
+    
+    ////////////////////////////////////////
+    //////////////// Warm start
+    ////////////////////////////////////////
+    
+    copy_vector(x, sol->primal, nPrimal+nEqCon);
+    copy_vector(lambda, sol->dual, nDual);
+    
   //opt->MAXITR
   for(itr=0; itr < opt->MAXITR; itr++) 
   {

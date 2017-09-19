@@ -145,6 +145,13 @@ void solve(Sol *sol, double par[nParam], const Opt *opt)
     c_nes = c_nes_prev ;
     
 
+    ////////////////////////////////////////
+    //////////////// Warm start
+    ////////////////////////////////////////
+    
+    copy_vector(x, sol->primal, nPrimal+nEqCon);
+    copy_vector(lambda, sol->dual, nDual);
+    
     
     
     long double start_kkt, end_kkt, sum_time, start_total, end_total;

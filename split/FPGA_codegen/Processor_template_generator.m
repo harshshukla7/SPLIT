@@ -1,4 +1,4 @@
-function [output] = SOC_template_generator(nParam, nPrimal, nDual, settings)
+function [output] = Processor_template_generator(nParam, nPrimal, nDual, settings)
 %% Can have the following arguments
 % nstates: number of states
 % nPrimal: number of primal
@@ -24,18 +24,8 @@ function [output] = SOC_template_generator(nParam, nPrimal, nDual, settings)
 
 %% hardware
 
-default_hardware = 'SOC';
+default_hardware = 'SOC'; %Embedded Processor
 settings.hardware = default_hardware;
-
-%% Check if the matrix and vector dimensions are provided
-
-if ~isfield(settings, 'mat_row'), error('Users must provide row dimension of the matrix in settings as settings.mat_row'); end
-if ~isfield(settings, 'mat_col'), error('Users must provide columns dimension of the matrix in settings as settings.mat_col'); end
-
-mat_row = settings.mat_row;
-mat_col = settings.mat_col;
-input_dim = settings.mat_col;
-output_dim = settings.mat_row;
 
 
 %% What kind of data type
@@ -44,6 +34,7 @@ default_data_type = 'float';
 if ~isfield(settings, 'data_type'), settings.data_type = default_data_type; end
 if (strcmp(settings.data_type, 'fixed') == 1)
     
+    error('Fixed point is currently not supported for Embedded Processors')
     default_integ_bits = '15';
     default_fract_bits = '15';
     
@@ -65,7 +56,7 @@ if ~isfield(settings, 'target_platform'), settings.target_platform = default_tar
 
 %% target clock frequency
 
-default_target_frequency = '150';
+default_target_frequency = '100';
 if ~isfield(settings, 'target_frequency'), settings.target_frequency = default_target_frequency;
 else
     if (ischar(settings, 'target_frequency') == 0)
@@ -99,8 +90,8 @@ save('input_protosplit.mat', 'x0', 'p0', 'd0', 'tol_itr0');
 
 
 %%% matrix operations
-mat_c = which('matrix_ops_soc.c');
-mat_h = which('matrix_ops_soc.h');
+mat_c = which('matrix_ops_ep.c');
+mat_h = which('matrix_ops_ep.h');
 mat_concat_c = '/soc_prototype/src/user_matrix_ops.c';
 mat_concat_h = '/soc_prototype/src/user_matrix_ops.h';
 
@@ -110,31 +101,43 @@ pd_h = '/user_probData.h';
 pd_concat_c = '/soc_prototype/src/user_probData.c';
 pd_concat_h = '/soc_prototype/src/user_probData.h';
 
-%%% matrix vector
-mv_c = '/user_mv_mult.cpp';
-mv_h = '/user_mv_mult.h';
-mv_concat_c_fpga = '/ip_design/src/user_mv_mult.cpp';
-mv_concat_h_fpga = '/ip_design/src/user_mv_mult.h';
 
 %%% foo user for ip design
 foo_concat_c = '/ip_design/src/foo_user.cpp';
-foo_algo_c = which('foo_user_orig_soc.cpp');
+foo_algo_c = which('foo_user_orig_ep.cpp');
 
 
 %%% foo user for soc prototype
 foo_soc_concat_c = '/soc_prototype/src/user_foo_data.h';
-foo_soc_algo_c = which('user_foo_data_soc_protoype.h');
+foo_soc_algo_c = which('user_foo_data_ep_protoype.h');
+
+%%% data declaration for soc
+data_decl_source_soc = which('user_foo_data_ep_protoype.h');
+data_decl_concat_soc = ('/soc_prototype/src/user_foo_data.h');
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%% add here
 %%% test_HIL for soc
-th_source_soc = which('test_HIL_orig_soc.m');
+th_source_soc = which('test_HIL_orig_ep.m');
 th_concat_soc = ('/soc_prototype/src/test_HIL.m');
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%% add here
 %%% test_HIL for fpga
-th_source_fpga = which('test_HIL_orig_soc_fpga.m');
+th_source_fpga = which('test_HIL_orig_ep_fpga.m');
 th_concat_fpga = ('/ip_design/src/test_HIL.m');
+
+%%% ldl.c for suitesparse
+ldlc_source_soc = which('user_ldl_orig.c');
+ldlc_concat_soc = ('/soc_prototype/src/user_ldl.c');
+
+
+%%% ldl.h for suitesparse
+ldlh_source_soc = which('user_ldl_orig.h');
+ldlh_concat_soc = ('/soc_prototype/src/user_ldl.h');
+
+
+%%% suitesparse config
+ss_config_source_soc = which('SuiteSparse_config_orig.h');
+ss_config_concat_soc = ('/soc_prototype/src/user_suiteSparse_config.h');
+
 
 %%% copy paste input data file
 input_data_source_concat = '/input_protosplit.mat';
@@ -150,58 +153,58 @@ algo = settings.algorithm;
 
 if ( strcmp(algo, 'admm') == 1)
     
-    algo_c = which('admm_soc.c');
-    algo_h = which('admm_soc.h');
+    algo_c = which('admm_ep.c');
+    algo_h = which('admm_ep.h');
     path_concat_c = '/soc_prototype/src/user_admm.c';
     path_concat_h = '/soc_prototype/src/user_admm.h';
 
     soc_concat_c = '/soc_prototype/src/soc_user.c';
-    soc_algo_c = which('soc_user_admm_orig.c');
+    soc_algo_c = which('soc_user_admm_orig_ep.c');
 
     
     
 elseif ( strcmp(algo, 'fadmm') == 1)
     
-    algo_c = which('fadmm_soc.c');
-    algo_h = which('admm_soc.h');
+    algo_c = which('fadmm_ep.c');
+    algo_h = which('admm_ep.h');
     path_concat_c = '/soc_prototype/src/user_fadmm.c';
     path_concat_h = '/soc_prototype/src/user_admm.h';
 
     soc_concat_c = '/soc_prototype/src/soc_user.c';
-    soc_algo_c = which('soc_user_fadmm_orig.c');
+    soc_algo_c = which('soc_user_fadmm_orig_ep.c');
 
     
 elseif ( strcmp(algo, 'fama') == 1)
     
-    algo_c = which('fama_soc.c');
-    algo_h = which('ama_soc.h');
+    algo_c = which('fama_ep.c');
+    algo_h = which('ama_ep.h');
     path_concat_c = '/soc_prototype/src/user_fama.c';
     path_concat_h = '/soc_prototype/src/user_ama.h';
 
     soc_concat_c = '/soc_prototype/src/soc_user.c';
-    soc_algo_c = which('soc_user_fama_orig.c');
+    soc_algo_c = which('soc_user_fama_orig_ep.c');
 
     
 elseif ( strcmp(algo, 'pda') == 1)
     
-    algo_c = which('pda_soc.c');
-    algo_h = which('pda_soc.h');
+    algo_c = which('pda_ep.c');
+    algo_h = which('pda_ep.h');
     path_concat_c = '/soc_prototype/src/user_pda.c';
     path_concat_h = '/soc_prototype/src/user_pda.h';
 
     soc_concat_c = '/soc_prototype/src/soc_user.c';
-    soc_algo_c = which('soc_user_pda_orig.c');
+    soc_algo_c = which('soc_user_pda_orig_ep.c');
 
     
 elseif ( strcmp(algo, 'fpda') == 1)
     
-    algo_c = which('fpda_soc.c');
-    algo_h = which('pda_soc.h');
+    algo_c = which('fpda_ep.c');
+    algo_h = which('pda_ep.h');
     path_concat_c = '/soc_prototype/src/user_fpda.c';
     path_concat_h = '/soc_prototype/src/user_pda.h';
 
     soc_concat_c = '/soc_prototype/src/soc_user.c';
-    soc_algo_c = which('soc_user_fpda_orig.c');
+    soc_algo_c = which('soc_user_fpda_orig_ep.c');
 
     
 else
@@ -240,7 +243,7 @@ end
 
 fileID = fopen('SPLIT_template.m','w');
 
-fprintf(fileID, 'make_template(''type'',''%s'',''project_name'',''%s'', ''input'', '' pl_vec_in:%d:%s'', ''output'', '' pl_vec_out:%d:%s'', ''soc_input'', '' state0:%d:%s'', ''soc_input'', '' primal0:%d:%s'', ''soc_input'', '' dual0:%d:%s'', ''soc_input'', '' tol_iterates:4:%s'', ''soc_output'', '' primal:%d:%s'', ''soc_output'', '' dual:%d:%s'', ''soc_output'', '' aux_primal:%d:%s'', ''soc_output'', '' iterates:4:%s'');\n \n', hard, proj, input_dim, data_t, output_dim, data_t, nx, data_t, np, data_t, nd, data_t, data_t,  np, data_t, nd, data_t, nd, data_t, data_t  );
+fprintf(fileID, 'make_template(''type'',''%s'',''project_name'',''%s'', ''input'', '' pl_vec_in:1:float'', ''output'', '' pl_vec_out:1:float'', ''soc_input'', '' state0:%d:%s'', ''soc_input'', '' primal0:%d:%s'', ''soc_input'', '' dual0:%d:%s'', ''soc_input'', '' tol_iterates:4:%s'', ''soc_output'', '' primal:%d:%s'', ''soc_output'', '' dual:%d:%s'', ''soc_output'', '' aux_primal:%d:%s'', ''soc_output'', '' iterates:4:%s'');\n \n', hard, proj,  nx, data_t, np, data_t, nd, data_t, data_t,  np, data_t, nd, data_t, nd, data_t, data_t  );
 
 %%% following line was for sending matrix as well
 %fprintf(fileID, 'make_template(''type'',''%s'',''project_name'',''%s'', ''input'', '' pl_vec_in:%d:%s'', ''input'', '' pl_mat_in:%d:%s'', ''output'', '' pl_vec_out:%d:%s'', ''soc_input'', '' state0:%d:%s'', ''soc_input'', '' primal0:%d:%s'', ''soc_input'', '' dual0:%d:%s'', ''soc_input'', '' tol_iterates:4:%s'', ''soc_output'', '' primal:%d:%s'', ''soc_output'', '' dual:%d:%s'', ''soc_output'', '' aux_primal:%d:%s'', ''soc_output'', '' iterates:4:%s'');\n \n', hard, proj, input_dim, data_t, (mat_row*mat_col), data_t, output_dim, data_t, nx, data_t, np, data_t, nd, data_t, data_t,  np, data_t, nd, data_t, nd, data_t, data_t  );
@@ -271,20 +274,16 @@ fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
 fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
 
 
-%%% matrix vecctor on PL copy paste
-fprintf(fileID, 'source_c = strcat(current_path, ''%s'');\n', mv_c);
-fprintf(fileID, 'source_h = strcat(current_path, ''%s'');\n', mv_h);
-fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', mv_concat_c_fpga);
-fprintf(fileID, 'dest_path_h = strcat(current_path, ''%s'');\n', mv_concat_h_fpga);
-fprintf(fileID, 'copyfile(source_c, dest_path_c);\n' );
-fprintf(fileID, 'copyfile(source_h, dest_path_h);\n \n \n' );
+%%%data delcaration copy paste
+fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', data_decl_concat_soc);
+fprintf(fileID, 'copyfile(''%s'', dest_path_c);\n \n \n', data_decl_source_soc );
 
 
 %%% foo user for ip design copy paste
 fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', foo_concat_c);
 fprintf(fileID, 'copyfile(''%s'', dest_path_c);\n \n \n', foo_algo_c );
 
-%%% foo user for ip prototype copy paste
+%%% foo user for soc prototype copy paste
 fprintf(fileID, 'dest_path_c = strcat(current_path, ''%s'');\n', foo_soc_concat_c);
 fprintf(fileID, 'copyfile(''%s'', dest_path_c);\n \n \n', foo_soc_algo_c );
 
@@ -300,6 +299,18 @@ fprintf(fileID, 'copyfile(''%s'', dest_m); \n \n', th_source_soc);
 %%% copy paste test_hil for ip_design
 fprintf(fileID, 'dest_m = strcat(current_path, ''%s''); \n', th_concat_fpga);
 fprintf(fileID, 'copyfile(''%s'', dest_m); \n \n', th_source_fpga);
+
+%%% copy paste ldl.c
+fprintf(fileID, 'dest_m = strcat(current_path, ''%s''); \n', ldlc_concat_soc);
+fprintf(fileID, 'copyfile(''%s'', dest_m); \n \n', ldlc_source_soc);
+
+%%% copy paste ldl.h
+fprintf(fileID, 'dest_m = strcat(current_path, ''%s''); \n', ldlh_concat_soc);
+fprintf(fileID, 'copyfile(''%s'', dest_m); \n \n', ldlh_source_soc);
+
+%%% copy paste suite sparse
+fprintf(fileID, 'dest_m = strcat(current_path, ''%s''); \n', ss_config_concat_soc);
+fprintf(fileID, 'copyfile(''%s'', dest_m); \n \n', ss_config_source_soc);
 
 %%% copy input data file
 
