@@ -1,0 +1,70 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1344\cocoasubrtf720
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww25400\viewh11320\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 \
+Step 1:  Installation of dependances.\
+\
+For linux only: \
+\
+			(i) Install ATLAS for use of blas\
+\
+				sudo apt-get install libatlas-base-dev\
+\
+\
+			(ii) install clapack \
+\
+				install liblapacke-dev (it\'92s also available in synaptic package manager)\
+For linux and Mac :\
+\
+ 			Install Suite Sparse\
+\
+					For Linux:\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 							sudo apt-get install build-essential (If Linux is freshly installed and it does not have g++)\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 \
+							Download Suitesparse unzip it and go to home folder. \
+\
+							change directory of terminal to home folder and do make library (as suggested by Read me file)\
+\
+							sudo make install (as suggested by Read me file) \
+\
+					For Mac:\
+\
+							Follow read me file provided in suitesparse\
+\
+				\
+\
+\
+Step 2: Generating a problem and compiling it in c\
+\
+(i)  Adding path : Download alternative-direction-toolbox.  Open the matlab and add \'93alternative-direction-toolbox/split\'94 folder to matlab path.\
+\
+(ii) Defining a problem in MATLAB:  \
+\
+		For Mac : change matlab path to \'93alternative-direction-toolbox/split/test/testSplitCoder\'94 and  open the 				file \'93testSplitCoder.m\'94. Define a problem there. For reference, different constraints and different  algorithms are illustrated with comments.\
+\
+		For Linux: change matlab path to \'93alternative-direction-toolbox/split/test/testLinux\'94 and  open the 				file \'93testSplitCoder.m\'94.  For the reference different constraints and different  algorithms are illustrated with comment.\
+\
+(iii) Code generation and data generation: \
+\
+		Once the problem is defined in m file (use testSplitCoder.m as a template) run the file and it will solve the optimisation problem in matlab. It will also create file\
+		called probdata.c and probate.h in the current matlab path.\
+\
+\
+(iv) For Linux only :  delete #include \'93accelerate.h\'94 from the probate.h and add  the following\
+\
+				 #include \'93clapack.h\'94 \
+				 #include\'94cblas.h\'94 \
+				# include \'93clapack_mac.h\'94\
+				#include \'93lapacke.h\'94 \
+\
+				\
+\
+\
+(v) do \'93make clean\'94 and \'93make\'94 in the terminal\
+\
+}

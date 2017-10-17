@@ -46,7 +46,8 @@ else
       nvar = zerovar(size(a,1),size(b,2));
       for i = 1:size(a,1)
         for j = 1:size(b,2)
-          q = dot(a.sub(i,:), b.sub(:,j));
+%           q = dot(a.sub(i,:), b.sub(:,j));
+            q = dot(a.sub(i,':'), b.sub(':',j));
           nvar = nvar.asgn(q, i, j);
         end
       end

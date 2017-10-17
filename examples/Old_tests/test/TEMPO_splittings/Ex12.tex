@@ -1,0 +1,127 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl}
+
+
+%\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion=true]{microtype}	
+\usepackage{cmbright}
+\usepackage{multirow}
+\usepackage{color}
+
+%%% Custom sectioning (sectsty package)
+\usepackage{sectsty}												% Custom sectioning (see below)
+%\allsectionsfont{\centering \normalfont\scshape}	% Change font of al section commands
+\allsectionsfont{\scshape}	% Change font of al section commands
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}														% No page header
+\fancyfoot[C]{}													% Empty
+\fancyfoot[R]{\thepage}									% Pagenumbering
+\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
+\renewcommand{\footrulewidth}{0pt}				% Remove footer underlines
+\setlength{\headheight}{13.6pt}
+
+%%% Maketitle metadata
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+\title{
+		%\vspace{-1in} 	
+		\usefont{OT1}{bch}{b}{n}
+		\normalfont \normalsize \textsc{School of random department names} \\ [25pt]
+		\horrule{0.5pt} \\[0.4cm]
+		\huge This is the title of the template report \\
+		\horrule{2pt} \\[0.5cm]
+}
+\author{
+		\normalfont 								\normalsize
+        Firstname Lastname\\[-3pt]		\normalsize
+        \today
+}
+\date{}
+
+\usepackage{verbatim}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\pgfplotsset{plot coordinates/math parser=false}
+\usepackage{graphicx}
+%\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{nomencl} 
+\usepackage{accents}
+\usepackage{caption}
+\usepackage{subcaption}
+\newcommand{\eg}{{\it e.g. }}	
+\newcommand{\ie}{{\it i.e. }}	
+\newcommand{\reals}{{\mathbb{R} }}	
+\newcommand{\diag}{{\mathbf{diag} }}  
+\newcommand{\prob}{{\mathbb{P} }}  
+\newcommand{\E}{{\mathbb{E} }} 
+\DeclareMathOperator*{\argmin}{arg\,min}	
+\newcommand{\tr}{{T }}	
+\newcommand{\dist}{{\mathbf{dist} }}	
+\newcommand{\std}{{\mathbf{std} }}  
+\DeclareMathOperator*{\dom}{dom}  
+\newcommand\munderbar[1]{%
+  \underaccent{\bar}{#1}}
+\DeclareMathOperator*{\var}{VaR}
+
+%\newcommand{name}[num]{definition}
+
+
+\newcommand{\pfpx}[4]{\frac{\partial #1_{#2}}{\partial #3_{#4}}}
+\newtheorem{mydef}{Definition}
+\newtheorem{mylem}{Lemma}
+\newtheorem{myas}{Assumption}
+\newtheorem{myrem}{Remark}
+\newtheorem{mycor}{Corollary}
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+
+
+\title{TEMPO Summer School 2015: Splitting schemes exercise}
+
+
+\begin{document}
+
+
+\author{LA3}
+
+\maketitle
+
+%\include{formulation}
+\section{Solve the inverted pendulum regulation problem with AMA and its enhanced versions}
+\begin{enumerate}
+\item
+Consider again the problem presented of stabilizing the inverted pendulum in the upright position, as discussed in Ex.1 of the course. The system was linearized around the desired equilibrium and an LQR controller had been applied. Consider now the actuator constraints $-3.25\le u \le 0.75$. We use the AMA to solve the problem in a rolling horizon fashion with sampling time $T_s=0.05s$, total simulation time $T=6s$ and $N=40$. Your job is to fill in the three steps of the algorithm (linear system solve, proximal step and dual update) in the template code \textbf{templateAMA.m}. The problem should be written in the form
+    \begin{equation}{\label{prob}}
+    \begin{array}{ll}
+      \mbox{minimize} & (z-z_s)^TH(z-z_s) \\
+      \mbox{subject to} & Cz=d \\
+                \quad & -Lz+l \ge 0 \enspace,
+    \end{array}
+    \end{equation}
+where $z=(x_0,x_1,\ldots,x_N,u_0,\ldots,u_{N-1})\in\reals^{N(n+m)+n}$, $H=\diag(Q,\ldots,Q,P,R,\ldots,R)$ and $z_s=(x_s,u_s)$ the zero equilibrium.
+You have a limited number of 150 iterations per optimal control (sub)problem. How does the original nonlinear system behave under the MPC controller?
+
+\item
+Solve the same problem using the accelerated version (FAMA) of the algorithm. Fill in the missing code (acceleration step in \textbf{templateFAMA.m}). Note that the other three steps are the same as before. The scheme also uses a restarting technique that is already written for you. What do you observe in order of the new iterations' number?
+
+\item
+Finally, a preconditioned version of the algorithm is given in \textbf{templatePrecAMA.m}. Run the method and compare with the previous two.
+
+\item
+Consider now a more complicated linearized model of a Boeing 747. The model has $n=12$ states and $m=17$ inputs and the aim is tracking of a reference signal $r(k)$ for two of the states (roll angle and airspeed). We discretize with sampling period $T_s=0.2s$ and solve in total 195 problems in rolling horizon. We make the same comparison as before, under the assumption that the maximum number of allowable iterations per optimal control subproblem is 1000. Use your code to run the example. Discuss your observations.
+
+
+\end{enumerate}
+\end{document}
